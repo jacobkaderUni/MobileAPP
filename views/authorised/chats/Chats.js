@@ -1,17 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { FlatList, StyleSheet, View, Text, TextInput, Button } from 'react-native';
-import { Modal, TouchableOpacity } from 'react-native-web';
-import { Ionicons, AntDesign } from '@expo/vector-icons';
-import getChats from '../../../services/api/chatManagment/getChats';
-import Chat from './components/Chat';
-import startChat from '../../../services/api/chatManagment/startChat';
-import getChatInfo from '../../../services/api/chatManagment/getChatInfo';
-import { useNavigation } from '@react-navigation/native';
-import { useIsFocused } from '@react-navigation/native';
-import Loading from '../../Loading';
-import { green } from '../../unauthorised/components/Constants';
-import FeatherIcon from 'react-native-vector-icons/Feather';
-import Icon from 'react-native-feather1s';
+import React, { useState, useEffect } from "react";
+import {
+  FlatList,
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  Button,
+} from "react-native";
+import { Modal, TouchableOpacity } from "react-native-web";
+import { Ionicons, AntDesign } from "@expo/vector-icons";
+import getChats from "../../../services/api/chatManagment/getChats";
+import Chat from "./components/Chat";
+import startChat from "../../../services/api/chatManagment/startChat";
+import getChatInfo from "../../../services/api/chatManagment/getChatInfo";
+import { useNavigation } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
+import Loading from "../../Loading";
+import { green } from "../../unauthorised/components/Constants";
+import FeatherIcon from "react-native-vector-icons/Feather";
+import Icon from "react-native-feather1s";
 export default function Chats() {
   const isFocused = useIsFocused();
   const [isLoading, setIsLoading] = useState(true);
@@ -40,20 +47,28 @@ export default function Chats() {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: 'Chats',
-      headerTitleAlign: 'center', // set title alignment to center
+      headerTitle: "Chats",
+      headerTitleAlign: "center", // set title alignment to center
       headerLeft: () => (
         // use headerLeft instead of headerRight for the left icon
         <Ionicons name="options" style={styles.dummy} size={32} color="black" />
       ),
       headerRight: () => (
-        <TouchableOpacity style={styles.addButton} onPress={() => setCreateChatModel(true)}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => setCreateChatModel(true)}
+        >
           {/* <AntDesign name="pluscircle" size={32} color="black" /> */}
-          <FeatherIcon color="black" size={35} name={'plus-circle'} strokeWidth={3} />
+          <FeatherIcon
+            color="black"
+            size={35}
+            name={"plus-circle"}
+            strokeWidth={3}
+          />
         </TouchableOpacity>
       ),
       headerStyle: {
-        backgroundColor: 'white',
+        backgroundColor: "white",
       },
     });
   }, [navigation]);
@@ -66,6 +81,7 @@ export default function Chats() {
 
   const handleGetChats = async () => {
     const response = await getChats();
+    console.log(response);
     if (response.status === 200) {
       setChats(response.data);
       setIsLoading(false);
@@ -79,21 +95,23 @@ export default function Chats() {
     const response = await getChatInfo(newid);
     if (response) {
       console.log(response);
-      navigation.navigate('OpenedChat', { chat: response, id: newid });
+      navigation.navigate("OpenedChat", { chat: response, id: newid });
     }
   };
 
   //////////
   const CreateChatScreen = () => {
     const [chatName, setChatName] = useState({
-      name: '',
+      name: "",
     });
 
     const handleCreateChat = () => {
       try {
         const response = startChat(chatName);
+        console.log(response);
         const newChat = response.data;
         setIsLoading(true);
+        handleGetChats();
       } catch (error) {
         console.log(chatName.name);
         console.log(error);
@@ -132,7 +150,10 @@ export default function Chats() {
             renderItem={renderItem}
             keyExtractor={(item) => item.chat_id.toString()}
           />
-          <Modal visible={createChatModel} onPress={() => handleOpenChat(item.chat_id)}>
+          <Modal
+            visible={createChatModel}
+            onPress={() => handleOpenChat(item.chat_id)}
+          >
             <CreateChatScreen />
           </Modal>
         </>
@@ -150,9 +171,9 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    width: '100%',
+    width: "100%",
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: "gray",
     marginBottom: 20,
     paddingHorizontal: 10,
   },

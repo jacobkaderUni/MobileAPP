@@ -4,7 +4,7 @@ const Background = ({ children }) => {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require('/Users/jkader/Documents/GitHub/2023Project/AwesomeProject/assets/backg6.jpeg')}
+        source={require('/Users/jacobkader/Documents/GitHub/MobileAPP/assets/backg6.jpeg')}
         style={styles.image}
       >
         <View style={{ position: 'absolute' }}>{children}</View>

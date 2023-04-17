@@ -1,11 +1,11 @@
-import React from 'react';
-import { Image, StyleSheet } from 'react-native-web';
+import React from "react";
+import { Image, StyleSheet } from "react-native-web";
 
 export default function Avatar() {
   return (
     <Image
       alt=""
-      source={require('/Users/jkader/Documents/GitHub/2023Project/AwesomeProject/assets/defaultUser.png')}
+      source={require("/Users/jacobkader/Documents/GitHub/MobileAPP/assets/backg6.jpeg")}
       style={styles.profileAvatar}
     />
   );

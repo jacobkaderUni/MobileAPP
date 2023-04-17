@@ -1,19 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Touchable, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-import Background from './components/Background';
-import Btn from './components/Btn';
-import { darkGreen } from './components/Constants';
-import Field from './components/Fielf';
-import registerUser from '../../services/api/userManagment/registerUser';
-import ValidateEmail from '../../functions/ValidateEmail';
-import ValidatePass from '../../functions/ValidatePass';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  Touchable,
+  TouchableOpacity,
+  TextInput,
+  StyleSheet,
+} from "react-native";
+import Background from "./components/Background";
+import Btn from "./components/Btn";
+import { darkGreen } from "./components/Constants";
+import Field from "./components/Fielf";
+import registerUser from "../../services/api/userManagment/registerUser";
+import ValidateEmail from "../../functions/ValidateEmail";
+import ValidatePass from "../../functions/ValidatePass";
 
 const Register = (props) => {
   const [form, setForm] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    password: '',
+    first_name: "",
+    last_name: "",
+    email: "",
+    password: "",
   });
   const [emailError, setEmailError] = useState(false);
   const [passError, setPassError] = useState(false);
@@ -33,62 +40,79 @@ const Register = (props) => {
   const onSubmit = () => {
     try {
       if (ValidateEmail(form.email) && ValidatePass(form.password)) {
+        console.log(form);
         const response = registerUser(form);
+        console.log(response);
         if (response.status === 201) {
-          navigation.navigate('logintest');
+          navigation.navigate("logintest");
         } else {
-          console.log('Check details please');
+          console.log("Check details please");
         }
       }
     } catch (error) {
-      console.log('Error: ', error);
+      console.log("Error: ", error);
     }
   };
   return (
-    <Background style={{ width: '100%' }}>
+    <Background style={{ width: "100%" }}>
       <View
         style={{
-          alignItems: 'center',
-          marginHorizontal: 'auto',
-          height: '100%',
-          flexDirection: 'column',
+          alignItems: "center",
+          marginHorizontal: "auto",
+          height: "100%",
+          flexDirection: "column",
         }}
       >
-        <View id="text" style={{ alignItems: 'center', marginVertical: 0, height: 290 }}>
+        <View
+          id="text"
+          style={{ alignItems: "center", marginVertical: 0, height: 290 }}
+        >
           <Text
             style={{
               paddingTop: 90,
-              color: 'white',
+              color: "white",
               fontSize: 64,
-              fontWeight: 'bold',
+              fontWeight: "bold",
             }}
           >
             Register
           </Text>
           <Text
             style={{
-              color: 'white',
+              color: "white",
               fontSize: 19,
-              fontWeight: 'bold',
+              fontWeight: "bold",
             }}
           >
             Create a new account
           </Text>
         </View>
-        <View id="form" style={{ alignItems: 'center' }}>
+        <View id="form" style={{ alignItems: "center" }}>
           <View
             style={{
-              backgroundColor: 'white',
+              backgroundColor: "white",
               height: 561,
               width: 393,
               borderTopLeftRadius: 130,
               paddingTop: 100,
-              alignItems: 'center',
+              alignItems: "center",
               marginTop: 0,
             }}
           >
-            <Field placeholder="First Name" id="fName" name="fName" />
-            <Field placeholder="Last Name" name="lName" id="lName" />
+            <Field
+              placeholder="First Name"
+              id="fName"
+              name="fName"
+              value={form.first_name}
+              onChangeText={(text) => setForm({ ...form, first_name: text })}
+            />
+            <Field
+              placeholder="Last Name"
+              name="lName"
+              id="lName"
+              value={form.last_name}
+              onChangeText={(text) => setForm({ ...form, last_name: text })}
+            />
             <Field
               placeholder="Email"
               id="email"
@@ -96,7 +120,11 @@ const Register = (props) => {
               value={form.email}
               onChangeText={(text) => setForm({ ...form, email: text })}
             />
-            {emailError && <Text style={styles.errorText}>Wrong email format, try ___@__.com</Text>}
+            {emailError && (
+              <Text style={styles.errorText}>
+                Wrong email format, try ___@__.com
+              </Text>
+            )}
             <Field
               secureTextEntry
               placeholder="**********"
@@ -105,37 +133,47 @@ const Register = (props) => {
               value={form.password}
               onChangeText={(text) => setForm({ ...form, password: text })}
             />
-            {passError && <Text style={styles.errorText}>Password is invalid, try again.</Text>}
+            {passError && (
+              <Text style={styles.errorText}>
+                Password is invalid, try again.
+              </Text>
+            )}
 
             <View
               style={{
-                display: 'flex',
-                flexDirection: 'row',
-                width: '78%',
+                display: "flex",
+                flexDirection: "row",
+                width: "78%",
                 paddingRight: 0,
-                justifyContent: 'center',
+                justifyContent: "center",
               }}
             >
-              <Text style={{ color: 'grey', fontSize: 12 }}>By signing up, you agree to our </Text>
+              <Text style={{ color: "grey", fontSize: 12 }}>
+                By signing up, you agree to our{" "}
+              </Text>
               <TouchableOpacity>
-                <Text style={{ color: darkGreen, fontWeight: 'bold', fontSize: 12 }}>
+                <Text
+                  style={{ color: darkGreen, fontWeight: "bold", fontSize: 12 }}
+                >
                   Terms & Conditions
                 </Text>
               </TouchableOpacity>
             </View>
             <View
               style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                width: '78%',
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+                width: "78%",
                 paddingRight: 16,
                 marginBottom: 7,
               }}
             >
-              <Text style={{ color: 'grey', fontSize: 12 }}>and </Text>
+              <Text style={{ color: "grey", fontSize: 12 }}>and </Text>
               <TouchableOpacity>
-                <Text style={{ color: darkGreen, fontWeight: 'bold', fontSize: 12 }}>
+                <Text
+                  style={{ color: darkGreen, fontWeight: "bold", fontSize: 12 }}
+                >
                   Privacy Policy
                 </Text>
               </TouchableOpacity>
@@ -143,11 +181,11 @@ const Register = (props) => {
 
             <View
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: '78%',
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "78%",
                 paddingRight: 16,
                 paddingStart: 16,
                 marginBottom: 7,
@@ -164,18 +202,30 @@ const Register = (props) => {
               />
               <View
                 style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: '78%',
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "78%",
                   paddingRight: 16,
                   marginBottom: 7,
                 }}
               >
-                <Text style={{ color: 'grey', fontSize: 12 }}>Already have an account? </Text>
-                <TouchableOpacity onPress={() => props.navigation.navigate('login')}>
-                  <Text style={{ color: darkGreen, fontWeight: 'bold', fontSize: 12 }}>Login</Text>
+                <Text style={{ color: "grey", fontSize: 12 }}>
+                  Already have an account?{" "}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => props.navigation.navigate("login")}
+                >
+                  <Text
+                    style={{
+                      color: darkGreen,
+                      fontWeight: "bold",
+                      fontSize: 12,
+                    }}
+                  >
+                    Login
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -189,14 +239,14 @@ const Register = (props) => {
 const styles = StyleSheet.create({
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     paddingHorizontal: 10,
     borderRadius: 5,
     marginBottom: 10,
   },
   errorText: {
-    color: 'grey',
+    color: "grey",
     fontSize: 12,
   },
 });
