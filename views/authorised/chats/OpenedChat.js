@@ -22,7 +22,9 @@ import Message from "./components/message";
 import ChatDetailsModal from "./components/ChatDetailsModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { green } from "../../unauthorised/components/Constants";
-
+import generateColorCode from "./components/generateColorCode";
+import Circle from "./components/Circle";
+import getInitials from "./components/getInitials";
 export default function OpenedChat({ route }) {
   const navigation = useNavigation();
   const { chat, id } = route.params;
@@ -122,15 +124,71 @@ export default function OpenedChat({ route }) {
     return messages.sort((a, b) => a.timestamp - b.timestamp);
   }
 
+  // const groupedMessages = groupBy(messages, (message) => {
+  //   const date = new Date(message.timestamp);
+  //   return date.toDateString();
+  // });
+
   const groupedMessages = groupBy(messages, (message) => {
-    const date = new Date(message.timestamp);
-    return date.toDateString();
+    if (!isLoading) {
+      const date = new Date(message.timestamp);
+      return date.toDateString();
+    }
   });
 
-  const sections = Object.entries(groupedMessages).map(([title, data]) => ({
-    title,
-    data,
-  }));
+  // const sections = Object.entries(groupedMessages).map(([title, data]) => ({
+  //   title,
+  //   data,
+  // }));
+
+  const sections = Object.entries(groupedMessages).map(([title, data]) => {
+    const authorData = Object.values(
+      groupBy(data, (message) => message.author.user_id)
+    );
+    const subSections = authorData.map((authorMessages) => ({
+      subTitle:
+        authorMessages[0].author.first_name +
+        " " +
+        authorMessages[0].author.last_name,
+      data: authorMessages,
+    }));
+    return {
+      title,
+      data: subSections,
+    };
+  });
+
+  const renderItem = ({ item, index }) => {
+    const receiverBackgroundColor =
+      generateColorCode(
+        item.data[0].author.first_name + item.data[0].author.last_name
+      ) + "4D";
+
+    return (
+      <View style={styles.messageContainer}>
+        {item.data.map((message, index) => (
+          <Message
+            key={message.message_id}
+            message={message}
+            user_id={currentUser}
+            chat_id={id}
+            updateMessage={handleUpdateMessage}
+            deleteMessage={handleDeleteMessage}
+            lastItem={item.data.length - 1 === index}
+          />
+        ))}
+        {item.data[0].author.user_id !== parseInt(currentUser) && (
+          <Circle
+            initials={getInitials(
+              item.data[0].author.first_name,
+              item.data[0].author.last_name
+            )}
+            backgroundColor={receiverBackgroundColor}
+          />
+        )}
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -150,20 +208,14 @@ export default function OpenedChat({ route }) {
               <SectionList
                 sections={sections}
                 keyExtractor={(item, index) => item + index}
-                renderSectionHeader={({ section: { title } }) => (
-                  <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionHeaderText}>{title}</Text>
-                  </View>
+                renderSectionHeader={({ section: { title, data } }) => (
+                  <>
+                    <View style={styles.sectionHeader}>
+                      <Text style={styles.sectionHeaderText}>{title}</Text>
+                    </View>
+                  </>
                 )}
-                renderItem={({ item }) => (
-                  <Message
-                    message={item}
-                    user_id={currentUser}
-                    chat_id={id}
-                    updateMessage={handleUpdateMessage}
-                    deleteMessage={handleDeleteMessage}
-                  />
-                )}
+                renderItem={renderItem}
               />
             </View>
           </ScrollView>
