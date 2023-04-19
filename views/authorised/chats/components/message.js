@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Button,
+} from "react-native";
 import generateColorCode from "./generateColorCode";
 import formatTimestamp from "./ConvertTime";
+import { Modal } from "react-native-web";
+import { Ionicons, AntDesign } from "@expo/vector-icons";
+
 export default function Message({
   message,
   chat_id,
@@ -13,7 +23,17 @@ export default function Message({
 }) {
   const [prevAuthor, setPrevAuthor] = useState(null);
   const isLastItem = { lastItem };
+  const [showOptions, setShowOptions] = useState(false);
+  const [isedditing, setIsEditing] = useState(false);
 
+  const handleEdit = () => {
+    setIsEditing(true);
+    setShowOptions(false);
+  };
+
+  const handlePress = () => {
+    setShowOptions(!showOptions);
+  };
   useEffect(() => {
     if (prevAuthor && prevAuthor.id === message.author.id) {
       setPrevAuthor(message.author);
@@ -32,10 +52,111 @@ export default function Message({
     generateColorCode(message.author.first_name + message.author.last_name) +
     "4D";
 
+  function handleDelete() {
+    deleteMessage(chat_id, message.message_id);
+  }
+
+  ///////
+  const EditModal = () => {
+    const [editedMessage, setEditedMessage] = useState({
+      message: message.message,
+    });
+    const handleUpdate = () => {
+      //console.log("editedMessage", editedMessage);
+      updateMessage(editedMessage, chat_id, message.message_id);
+      setIsEditing(false);
+      setShowOptions(false);
+    };
+
+    return (
+      <View style={styles.modalContainer}>
+        <TouchableOpacity
+          onPress={() => setIsEditing((prevState) => !prevState)}
+        >
+          <Ionicons name="close" size={24} color="black" />
+        </TouchableOpacity>
+        <TextInput
+          style={styles.input}
+          placeholder={editedMessage.message}
+          value={editedMessage.message}
+          onChangeText={(text) => setEditedMessage({ message: text })}
+        />
+        <Button title="edit message" onPress={handleUpdate} />
+      </View>
+    );
+  };
+  ///////
   if (message.author.user_id === parseInt(user_id)) {
     if (isLastItem.lastItem) {
       return (
+        // <>
+        //   <TouchableOpacity onPress={handlePress}>
+        //     <View
+        //       style={[
+        //         styles.container,
+        //         styles.senderMessage,
+        //         { backgroundColor: senderBackgroundColor },
+        //       ]}
+        //     >
+        //       <Text key={message.timestamp} style={styles.message}>
+        //         {message.message}{" "}
+        //         {/* <Text style={styles.timestamp}>
+        //         {formatTimestamp(message.timestamp)}{" "}
+        //       </Text> */}
+        //       </Text>
+        //     </View>
+        //     <Text style={styles.timeSender}>
+        //       {formatTimestamp(message.timestamp)}
+        //     </Text>
+        //   </TouchableOpacity>
+        // </>
+
         <>
+          <TouchableOpacity onPress={handlePress}>
+            <View
+              style={[
+                styles.container,
+                styles.senderMessage,
+                { backgroundColor: senderBackgroundColor },
+              ]}
+            >
+              <Text key={message.timestamp} style={styles.message}>
+                {message.message}{" "}
+                {/* <Text style={styles.timestamp}>
+    {formatTimestamp(message.timestamp)}{" "}
+  </Text> */}
+              </Text>
+              {showOptions && (
+                <View style={styles.optionsContainer}>
+                  <TouchableOpacity onPress={() => handleEdit()}>
+                    <Text style={styles.option}>Edit</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleDelete()}>
+                    <Text style={styles.option}>Delete</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+            <Text style={styles.timeSender}>
+              {formatTimestamp(message.timestamp)}
+            </Text>
+          </TouchableOpacity>
+          <Modal
+            transparent={true}
+            animationIn="fadeIn"
+            animationOut="fadeOut"
+            visible={isedditing}
+          >
+            <View style={styles.overlay}>
+              <EditModal />
+            </View>
+          </Modal>
+        </>
+      );
+    }
+    return (
+      <>
+        <TouchableOpacity onPress={handlePress}>
           <View
             style={[
               styles.container,
@@ -46,31 +167,32 @@ export default function Message({
             <Text key={message.timestamp} style={styles.message}>
               {message.message}{" "}
               {/* <Text style={styles.timestamp}>
-                {formatTimestamp(message.timestamp)}{" "}
-              </Text> */}
-            </Text>
-          </View>
-          <Text style={styles.timeSender}>
-            {formatTimestamp(message.timestamp)}
-          </Text>
-        </>
-      );
-    }
-    return (
-      <View
-        style={[
-          styles.container,
-          styles.senderMessage,
-          { backgroundColor: senderBackgroundColor },
-        ]}
-      >
-        <Text key={message.timestamp} style={styles.message}>
-          {message.message}{" "}
-          {/* <Text style={styles.timestamp}>
             {formatTimestamp(message.timestamp)}{" "}
           </Text> */}
-        </Text>
-      </View>
+            </Text>
+            {showOptions && (
+              <View style={styles.optionsContainer}>
+                <TouchableOpacity onPress={() => handleEdit()}>
+                  <Text style={styles.option}>Edit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleDelete()}>
+                  <Text style={styles.option}>Delete</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        </TouchableOpacity>
+        <Modal
+          transparent={true}
+          animationIn="fadeIn"
+          animationOut="fadeOut"
+          visible={isedditing}
+        >
+          <View style={styles.overlay}>
+            <EditModal />
+          </View>
+        </Modal>
+      </>
     );
   }
 
@@ -195,4 +317,30 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
   },
+  optionsContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    marginTop: 5,
+  },
+  option: {
+    color: "red",
+    marginHorizontal: 10,
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    marginHorizontal: 20,
+    marginVertical: 80,
+  },
+  input: {
+    height: 40,
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "gray",
+    marginBottom: 20,
+    paddingHorizontal: 10,
+  },
+  overlay: { height: "100%", backgroundColor: "rgba(0, 0, 0, 0.5)" },
 });

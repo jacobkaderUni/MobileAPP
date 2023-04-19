@@ -26,25 +26,6 @@ export default function Chats() {
   const [createChatModel, setCreateChatModel] = useState(false);
   const navigation = useNavigation();
 
-  // React.useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerTitle: 'Chats',
-  //     headerStyle: {
-  //       // borderBottomLeftRadius: 20,
-  //       // borderBottomRightRadius: 20,
-  //     },
-
-  //     headerRight: () => (
-  //       <>
-  //         <Ionicons name="options" style={styles.dummy} size={35} color="black" />
-  //         <TouchableOpacity style={styles.addButton} onPress={() => setCreateChatModel(true)}>
-  //           <AntDesign name="pluscircle" size={35} color="black" />
-  //         </TouchableOpacity>
-  //       </>
-  //     ),
-  //   });
-  // }, [navigation]);
-
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "Chats",
@@ -119,7 +100,7 @@ export default function Chats() {
     };
 
     return (
-      <View style={styles.container}>
+      <View style={styles.modalContainer}>
         <TouchableOpacity onPress={() => setCreateChatModel(false)}>
           <Ionicons name="close" size={24} color="black" />
         </TouchableOpacity>
@@ -151,10 +132,15 @@ export default function Chats() {
             keyExtractor={(item) => item.chat_id.toString()}
           />
           <Modal
+            transparent={true}
+            animationIn="fadeIn"
+            animationOut="fadeOut"
             visible={createChatModel}
             onPress={() => handleOpenChat(item.chat_id)}
           >
-            <CreateChatScreen />
+            <View style={styles.overlay}>
+              <CreateChatScreen />
+            </View>
           </Modal>
         </>
       )}
@@ -165,9 +151,16 @@ export default function Chats() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
     paddingHorizontal: 0,
     paddingTop: 0,
+  },
+  overlay: { height: "100%", backgroundColor: "rgba(0, 0, 0, 0.5)" },
+  modalContainer: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    marginHorizontal: 20,
+    marginVertical: 80,
   },
   input: {
     height: 40,

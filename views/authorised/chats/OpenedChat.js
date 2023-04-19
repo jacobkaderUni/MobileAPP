@@ -223,13 +223,16 @@ export default function OpenedChat({ route }) {
           </ScrollView>
           <View style={styles.inputContainer}>
             <TextInput
-              placeholder="message"
+              placeholder="Text Message"
               onChangeText={handleTyping}
               value={message.message}
               style={[styles.searchBox, { flex: 1 }]}
             />
-            <TouchableOpacity onPress={() => handleMessage(message, id)}>
-              <Ionicons name="send" size={24} color="black" />
+            <TouchableOpacity
+              style={styles.sendButton}
+              onPress={() => handleMessage(message, id)}
+            >
+              <Ionicons name="send" size={24} color="#1982FC" />
             </TouchableOpacity>
           </View>
         </View>
@@ -244,6 +247,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingHorizontal: 6,
     paddingTop: 0,
+  },
+  sendButton: {
+    position: "absolute",
+    right: 10,
+    color: "red",
   },
   sectionHeader: {
     // backgroundColor: "rgba(0, 0, 0, 0.6)",
@@ -262,7 +270,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
-    paddingHorizontal: 10,
+    paddingHorizontal: 0,
     paddingVertical: 5,
     borderTopWidth: 1,
     borderTopColor: "#e9eaec",
@@ -274,8 +282,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     fontSize: 16,
     flex: 1,
-    marginRight: 10,
+    marginRight: 0,
     borderWidth: 1,
     borderColor: "#d4d4d4",
+    opacity: 0.5,
   },
 });
