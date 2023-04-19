@@ -9,14 +9,15 @@ const Circle = ({ initials, backgroundColor }) => {
 };
 const styles = StyleSheet.create({
   circle: {
-    width: 30,
-    height: 30,
+    width: 24,
+    height: 24,
     borderRadius: 15,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 10,
     marginLeft: 0,
     marginBottom: 10,
+    marginTop: -17,
   },
   initials: {
     color: "white",

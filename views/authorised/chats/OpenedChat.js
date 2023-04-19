@@ -25,6 +25,7 @@ import { green } from "../../unauthorised/components/Constants";
 import generateColorCode from "./components/generateColorCode";
 import Circle from "./components/Circle";
 import getInitials from "./components/getInitials";
+import formatTimestamp from "./components/ConvertTime";
 export default function OpenedChat({ route }) {
   const navigation = useNavigation();
   const { chat, id } = route.params;
@@ -164,6 +165,7 @@ export default function OpenedChat({ route }) {
         item.data[0].author.first_name + item.data[0].author.last_name
       ) + "4D";
 
+    console.log(item);
     return (
       <View style={styles.messageContainer}>
         {item.data.map((message, index) => (

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import generateColorCode from "./generateColorCode";
+import formatTimestamp from "./ConvertTime";
 export default function Message({
   message,
   chat_id,
@@ -20,11 +21,11 @@ export default function Message({
       setPrevAuthor(null);
     }
   }, [message, prevAuthor]);
-  function formatTimestamp(timestamp) {
-    const date = new Date(timestamp);
-    const timeOptions = { hour: "numeric", minute: "numeric" };
-    return date.toLocaleTimeString([], timeOptions);
-  }
+  // function formatTimestamp(timestamp) {
+  //   const date = new Date(timestamp);
+  //   const timeOptions = { hour: "numeric", minute: "numeric" };
+  //   return date.toLocaleTimeString([], timeOptions);
+  // }
 
   const senderBackgroundColor = "#1982FC";
   const receiverBackgroundColor =
@@ -32,6 +33,29 @@ export default function Message({
     "4D";
 
   if (message.author.user_id === parseInt(user_id)) {
+    if (isLastItem.lastItem) {
+      return (
+        <>
+          <View
+            style={[
+              styles.container,
+              styles.senderMessage,
+              { backgroundColor: senderBackgroundColor },
+            ]}
+          >
+            <Text key={message.timestamp} style={styles.message}>
+              {message.message}{" "}
+              {/* <Text style={styles.timestamp}>
+                {formatTimestamp(message.timestamp)}{" "}
+              </Text> */}
+            </Text>
+          </View>
+          <Text style={styles.timeSender}>
+            {formatTimestamp(message.timestamp)}
+          </Text>
+        </>
+      );
+    }
     return (
       <View
         style={[
@@ -42,9 +66,9 @@ export default function Message({
       >
         <Text key={message.timestamp} style={styles.message}>
           {message.message}{" "}
-          <Text style={styles.timestamp}>
+          {/* <Text style={styles.timestamp}>
             {formatTimestamp(message.timestamp)}{" "}
-          </Text>
+          </Text> */}
         </Text>
       </View>
     );
@@ -52,22 +76,25 @@ export default function Message({
 
   if (isLastItem.lastItem) {
     return (
-      <View style={{ flexDirection: "row" }}>
-        <View
-          style={[
-            styles.container,
-            styles.receiverMessageLastItem,
-            { backgroundColor: receiverBackgroundColor },
-          ]}
-        >
-          <Text key={message.timestamp} style={styles.message}>
-            {message.message}{" "}
-            <Text style={styles.timestamp}>
-              {formatTimestamp(message.timestamp)}{" "}
+      <>
+        <View style={{ flexDirection: "row" }}>
+          <View
+            style={[
+              styles.container,
+              styles.receiverMessageLastItem,
+              { backgroundColor: receiverBackgroundColor },
+            ]}
+          >
+            <Text key={message.timestamp} style={styles.message}>
+              {message.message}{" "}
+              {/* <Text style={styles.timestamp}>
+                {formatTimestamp(message.timestamp)}{" "}
+              </Text> */}
             </Text>
-          </Text>
+          </View>
         </View>
-      </View>
+        <Text style={styles.time}>{formatTimestamp(message.timestamp)}</Text>
+      </>
     );
   } else {
     return (
@@ -82,9 +109,9 @@ export default function Message({
           <>
             <Text key={message.timestamp} style={styles.message}>
               {message.message}{" "}
-              <Text style={styles.timestamp}>
+              {/* <Text style={styles.timestamp}>
                 {formatTimestamp(message.timestamp)}{" "}
-              </Text>
+              </Text> */}
             </Text>
           </>
         </View>
@@ -133,6 +160,19 @@ const styles = StyleSheet.create({
   },
   timestamp: {
     fontSize: 7,
+  },
+  time: {
+    fontSize: 10,
+    marginLeft: 27,
+    marginTop: 10,
+    opacity: 0.5,
+  },
+  timeSender: {
+    alignSelf: "flex-end",
+    fontSize: 10,
+    marginLeft: 27,
+    marginTop: 3,
+    opacity: 0.5,
   },
   receiverTimestamp: {
     fontSize: 3,
