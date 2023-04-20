@@ -1,19 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { TextInput } from 'react-native-web';
-import getChatInfo from '../../../../services/api/chatManagment/getChatInfo';
-import addUserToChat from '../../../../services/api/chatManagment/addUserToChat';
-import updateChat from '../../../../services/api/chatManagment/updateChat';
-import removeUserFromChat from '../../../../services/api/chatManagment/removeUserFromChat';
-import Loading from '../../../Loading';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { TextInput } from "react-native-web";
+import getChatInfo from "../../../../services/api/chatManagment/getChatInfo";
+import addUserToChat from "../../../../services/api/chatManagment/addUserToChat";
+import updateChat from "../../../../services/api/chatManagment/updateChat";
+import removeUserFromChat from "../../../../services/api/chatManagment/removeUserFromChat";
+import Loading from "../../../Loading";
+import DisplayImage from "../../account/cameraHandling.s/Display";
 export default function ChatDetailsModal({ item, id, closeDetails }) {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [chatName, setChatName] = useState({
-    name: '',
+    name: "",
   });
-  const [userToAdd, setUserToAdd] = useState('');
+  const [userToAdd, setUserToAdd] = useState("");
 
   useEffect(() => {
     if (isLoading) {
@@ -34,7 +41,7 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
     const response = await addUserToChat(id, userToAdd);
     if (response) {
       fetchChatInfo();
-      setUserToAdd('');
+      setUserToAdd("");
     }
   };
 
@@ -55,18 +62,30 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
 
     return (
       <View style={styles.memberContainer}>
-        <Text style={styles.memberName}>
-          {item.first_name} {item.last_name}
-        </Text>
-        <TouchableOpacity style={styles.addButton} onPress={handleRemoveUser}>
-          <Text style={styles.addButtonText}>Remove</Text>
-        </TouchableOpacity>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <DisplayImage user_id={item.user_id} type={"2"} />
+          <Text style={styles.memberName}>
+            {item.first_name} {item.last_name}
+          </Text>
+          <TouchableOpacity style={styles.addButton} onPress={handleRemoveUser}>
+            <Text style={styles.addButtonText}>Remove</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   };
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => closeDetails()} style={styles.closeButton}>
+      <TouchableOpacity
+        onPress={() => closeDetails()}
+        style={styles.closeButton}
+      >
         <Ionicons name="close" size={24} color="black" />
       </TouchableOpacity>
       <Text style={styles.title}>Chat Details</Text>
@@ -83,7 +102,11 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
       {isLoading ? (
         <Loading />
       ) : (
-        <FlatList data={users} renderItem={renderItem} keyExtractor={(item) => item.user_id} />
+        <FlatList
+          data={users}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.user_id}
+        />
       )}
       <Text style={styles.label}>Add User:</Text>
       <View style={styles.inputContainer}>
@@ -94,7 +117,10 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
           onChangeText={(text) => setUserToAdd(text)}
           keyboardType="numeric"
         />
-        <TouchableOpacity style={styles.addButton} onPress={handleAddUserToChat}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={handleAddUserToChat}
+        >
           <Text style={styles.addButtonText}>Add</Text>
         </TouchableOpacity>
       </View>
@@ -105,17 +131,17 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 20,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   closeButton: {
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginTop: 10,
     marginBottom: 20,
   },
@@ -125,23 +151,23 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,
   },
   addButton: {
-    backgroundColor: '#4285F4',
+    backgroundColor: "#4285F4",
     borderRadius: 5,
     padding: 10,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#4285F4',
+    borderColor: "#4285F4",
   },
   addButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
   },
   membersTitle: {
     fontSize: 18,
@@ -153,13 +179,13 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   loadingText: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 16,
     marginTop: 20,
   },
   inputContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 });
