@@ -9,7 +9,8 @@ import {
   TextInput,
   ScrollView,
 } from "react-native";
-import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
+import { FlatList } from "react-native-web";
+import { Ionicons, SimpleLineIcons, FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { groupBy, max } from "lodash";
 import sendMessage from "../../../services/api/chatManagment/sendMessage";
@@ -24,11 +25,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import generateColorCode from "./components/generateColorCode";
 import Circle from "./components/Circle";
 import getInitials from "./components/getInitials";
+import Drafts from "./components/Drafts";
 export default function OpenedChat({ route }) {
   const navigation = useNavigation();
   const { chat, id } = route.params;
   const [isLoading, setIsLoading] = useState(true);
   const [chatDetails, setChatDetails] = useState(false);
+  const [showDrafts, setShowDrafts] = useState(false);
+  const [draftMessages, setDraftMessages] = useState([]);
   const [details, setDetails] = useState([]);
   const [messages, setMessages] = useState([]);
   const [message, setmessage] = useState({
@@ -42,9 +46,20 @@ export default function OpenedChat({ route }) {
       headerTitleAlign: "center",
       headerStyle: {},
       headerRight: () => (
-        <TouchableOpacity onPress={() => openModal()}>
-          <SimpleLineIcons name="options-vertical" size={24} color="black" />
-        </TouchableOpacity>
+        <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity
+            style={{ marginRight: 15 }}
+            onPress={() => setShowDrafts(true)}
+          >
+            <FontAwesome name="edit" size={24} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{ marginRight: 5 }}
+            onPress={() => openModal()}
+          >
+            <SimpleLineIcons name="options-vertical" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
       ),
     });
   }, [navigation]);
@@ -141,7 +156,6 @@ export default function OpenedChat({ route }) {
         item.data[0].author.first_name + item.data[0].author.last_name
       ) + "4D";
 
-    console.log(item);
     return (
       <View style={styles.messageContainer}>
         {item.data.map((message, index) => (
@@ -168,6 +182,25 @@ export default function OpenedChat({ route }) {
     );
   };
 
+  const handleSaveDraft = async () => {
+    try {
+      if (message.message.trim() === "") {
+        // If the message is empty, do not save it as a draft
+        return;
+      }
+      // Add the current draft message to the draft messages array
+      const newDraftMessages = [...draftMessages, message.message];
+      // Store the draft messages array in AsyncStorage
+      await AsyncStorage.setItem(id, JSON.stringify(newDraftMessages));
+      // Update the state with the new draft messages
+      setDraftMessages(newDraftMessages);
+      setmessage({ message: "" });
+    } catch (error) {
+      // Handle the error
+      console.error(error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       {isLoading ? (
@@ -180,6 +213,21 @@ export default function OpenedChat({ route }) {
               id={id}
               closeDetails={closeModal}
             />
+          </Modal>
+          <Modal
+            transparent={true}
+            animationIn="fadeIn"
+            animationOut="fadeOut"
+            visible={showDrafts}
+          >
+            <View style={styles.overlay}>
+              {/* <DraftScreen /> */}
+              <Drafts
+                id={id}
+                handleMessage={handleMessage}
+                setShowDrafts={setShowDrafts}
+              />
+            </View>
           </Modal>
           <ScrollView>
             <View style={{ height: max }}>
@@ -198,6 +246,9 @@ export default function OpenedChat({ route }) {
             </View>
           </ScrollView>
           <View style={styles.inputContainer}>
+            <TouchableOpacity onPress={() => handleSaveDraft(message, id)}>
+              <FontAwesome name="edit" size={24} color="black" />
+            </TouchableOpacity>
             <TextInput
               placeholder="Text Message"
               onChangeText={handleTyping}
@@ -262,5 +313,71 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#d4d4d4",
     opacity: 0.5,
+  },
+  overlay: { height: "100%", backgroundColor: "rgba(0, 0, 0, 0.5)" },
+  modalContainer: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    maxHeight: 400,
+    width: "90%",
+    alignSelf: "center",
+    position: "absolute",
+    bottom: 20,
+    left: "5%",
+    zIndex: 999,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  headerText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  closeButton: {
+    padding: 8,
+  },
+  item: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+  },
+  sendButtonModal: {
+    backgroundColor: "#6C63FF",
+    borderRadius: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginHorizontal: 8,
+    borderWidth: 1,
+    borderColor: "#ccc",
+  },
+  sendButtonText: {
+    fontSize: 16,
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
