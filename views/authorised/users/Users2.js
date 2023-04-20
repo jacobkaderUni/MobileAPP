@@ -1,34 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, SectionList, ScrollView } from 'react-native';
-import addContact from '../../../services/api/contactManagment/addContact';
-import SearchBox from './components/SearchBox';
-import SearchUsers from '../../../services/api/userManagment/SearchUsers';
-import { useMemo } from 'react';
-import { useCallback } from 'react';
-import Loading from '../../Loading';
-import ContactItem from './components/ContactItem';
-import SectionHeader from './components/SectionHeader';
+import React, { useState, useEffect } from "react";
+import { StyleSheet, View, SectionList, ScrollView } from "react-native";
+import addContact from "../../../services/api/contactManagment/addContact";
+import SearchBox from "./components/SearchBox";
+import SearchUsers from "../../../services/api/userManagment/SearchUsers";
+import { useMemo } from "react";
+import { useCallback } from "react";
+import Loading from "../../Loading";
+import ContactItem from "./components/ContactItem";
+import SectionHeader from "./components/SectionHeader";
 
 export default function Users2() {
   const [isLoading, setIsLoading] = useState(true);
   const [contacts, setContacts] = useState([]);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [timerId, setTimerId] = useState(null);
   const [isFocused, setIsFocused] = useState(false);
-
   const handleFocus = () => setIsFocused(true);
   const handleBlur = () => setIsFocused(false);
 
   // Reset state when component is mounted
   useEffect(() => {
-    setQuery('');
+    setQuery("");
     setTimerId(null);
     setIsFocused(false);
   }, []);
 
   useEffect(() => {
     if (isLoading) {
-      fetchContacts('');
+      fetchContacts("");
     }
   }, [isLoading, query]);
 
@@ -53,7 +52,10 @@ export default function Users2() {
     }, {});
   }, [sortedContacts]);
 
-  const sections = useMemo(() => Object.values(groupedContacts), [groupedContacts]);
+  const sections = useMemo(
+    () => Object.values(groupedContacts),
+    [groupedContacts]
+  );
 
   const fetchContacts = useCallback(async (text) => {
     try {
@@ -82,8 +84,9 @@ export default function Users2() {
   const handleAddContact = useCallback(
     async (id) => {
       const response = await addContact(id);
+      console.log(response);
       if (response) {
-        fetchContacts('');
+        fetchContacts("");
       }
     },
     [fetchContacts]
@@ -108,9 +111,13 @@ export default function Users2() {
               renderItem={({ item }) => (
                 <ContactItem contact={item} addContact={handleAddContact} />
               )}
-              renderSectionHeader={({ section: { title } }) => <SectionHeader title={title} />}
+              renderSectionHeader={({ section: { title } }) => (
+                <SectionHeader title={title} />
+              )}
               keyExtractor={(item) => item.user_id.toString()}
-              ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
+              ItemSeparatorComponent={() => (
+                <View style={styles.itemSeparator} />
+              )}
             />
           </ScrollView>
         </>
@@ -122,8 +129,8 @@ export default function Users2() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 8,
+    backgroundColor: "#fff",
+    paddingHorizontal: 1,
     paddingTop: 8,
   },
 });

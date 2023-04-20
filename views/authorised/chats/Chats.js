@@ -69,6 +69,8 @@ export default function Chats() {
       if (createChatModel) {
         setCreateChatModel(false);
       }
+    } else {
+      console.log("no chats ");
     }
   };
 
@@ -131,19 +133,19 @@ export default function Chats() {
             renderItem={renderItem}
             keyExtractor={(item) => item.chat_id.toString()}
           />
-          <Modal
-            transparent={true}
-            animationIn="fadeIn"
-            animationOut="fadeOut"
-            visible={createChatModel}
-            onPress={() => handleOpenChat(item.chat_id)}
-          >
-            <View style={styles.overlay}>
-              <CreateChatScreen />
-            </View>
-          </Modal>
         </>
       )}
+      <Modal
+        transparent={true}
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+        visible={createChatModel}
+        onPress={() => handleOpenChat(item.chat_id)}
+      >
+        <View style={styles.overlay}>
+          <CreateChatScreen />
+        </View>
+      </Modal>
     </View>
   );
 }

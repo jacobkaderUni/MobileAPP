@@ -26,6 +26,7 @@ import generateColorCode from "./components/generateColorCode";
 import Circle from "./components/Circle";
 import getInitials from "./components/getInitials";
 import formatTimestamp from "./components/ConvertTime";
+import DisplayImage from "../account/cameraHandling.s/Display";
 export default function OpenedChat({ route }) {
   const navigation = useNavigation();
   const { chat, id } = route.params;

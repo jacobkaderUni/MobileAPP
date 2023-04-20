@@ -1,39 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, SectionList } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
+import React, { useState, useEffect } from "react";
+import { StyleSheet, View, Text, SectionList } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 
-import unblockContact from '../../../services/api/contactManagment/unblockContact';
-import getContacts from '../../../services/api/contactManagment/getContacts';
-import deleteContact from '../../../services/api/contactManagment/deleteContact';
-import getBlockedContacts from '../../../services/api/contactManagment/getBlockedContacts';
-import blockContact from '../../../services/api/contactManagment/blockContact';
+import unblockContact from "../../../services/api/contactManagment/unblockContact";
+import getContacts from "../../../services/api/contactManagment/getContacts";
+import deleteContact from "../../../services/api/contactManagment/deleteContact";
+import getBlockedContacts from "../../../services/api/contactManagment/getBlockedContacts";
+import blockContact from "../../../services/api/contactManagment/blockContact";
 
-import FilterButton from './components/Button';
-import Contact from './components/Contact';
-import Loading from '../../Loading';
+import FilterButton from "./components/Button";
+import Contact from "./components/Contact";
+import Loading from "../../Loading";
 
 export default function List() {
   const isFocused = useIsFocused();
-  const [selectedValue, setSelectedValue] = useState('contacts');
+  const [selectedValue, setSelectedValue] = useState("contacts");
   const [Contacts, setContacts] = useState([]);
+  const [noContacts, setNoContacts] = useState(false);
 
   const fetchData = async (filter) => {
     try {
       let resContacts;
       switch (filter) {
-        case 'contacts':
-          setSelectedValue('contacts');
+        case "contacts":
+          setSelectedValue("contacts");
           resContacts = await getContacts();
           break;
-        case 'blocked':
-          setSelectedValue('blocked');
+        case "blocked":
+          setSelectedValue("blocked");
           resContacts = await getBlockedContacts();
           break;
         default:
-          setSelectedValue('contacts');
+          setSelectedValue("contacts");
           resContacts = await getContacts();
       }
       setContacts(resContacts.data);
+      if (resContacts.data.length === 0) {
+        setNoContacts(true);
+      } else {
+        setNoContacts(false);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -41,7 +47,7 @@ export default function List() {
 
   useEffect(() => {
     if (isFocused) {
-      fetchData('contacts');
+      fetchData("contacts");
     }
   }, [isFocused]);
 
@@ -114,14 +120,16 @@ export default function List() {
         </Picker> */}
         <FilterButton
           options={[
-            { label: 'Contacts', value: 'contacts' },
-            { label: 'Blocked', value: 'blocked' },
+            { label: "Contacts", value: "contacts" },
+            { label: "Blocked", value: "blocked" },
           ]}
           defaultOption={{
-            label: 'Contacts',
-            value: 'contacts',
+            label: "Contacts",
+            value: "contacts",
           }}
-          onSelect={(selectedOption) => handleFilterChange(selectedOption.value)}
+          onSelect={(selectedOption) =>
+            handleFilterChange(selectedOption.value)
+          }
         />
       </View>
       {!isFocused ? (
@@ -130,16 +138,26 @@ export default function List() {
         </>
       ) : (
         <>
-          <SectionList
-            sections={sections}
-            renderItem={
-              selectedValue === 'contacts' ? renderItemContacts : renderItemBlockedContacts
-            }
-            renderSectionHeader={({ section: { title } }) => (
-              <Text style={styles.sectionHeader}>{title}</Text>
-            )}
-            keyExtractor={(item) => item.user_id.toString()}
-          />
+          {noContacts ? (
+            <>
+              <Text>no contacts</Text>
+            </>
+          ) : (
+            <>
+              <SectionList
+                sections={sections}
+                renderItem={
+                  selectedValue === "contacts"
+                    ? renderItemContacts
+                    : renderItemBlockedContacts
+                }
+                renderSectionHeader={({ section: { title } }) => (
+                  <Text style={styles.sectionHeader}>{title}</Text>
+                )}
+                keyExtractor={(item) => item.user_id.toString()}
+              />
+            </>
+          )}
         </>
       )}
     </View>
@@ -149,24 +167,24 @@ export default function List() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingHorizontal: 16,
     paddingTop: 40,
   },
   searchBox: {
     borderRadius: 25,
-    borderColor: '#333',
-    backgroundColor: '#fff',
+    borderColor: "#333",
+    backgroundColor: "#fff",
     paddingVertical: 8,
     paddingHorizontal: 16,
     fontSize: 16,
     marginBottom: 16,
   },
   itemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 16,
-    borderBottomColor: '#ccc',
+    borderBottomColor: "#ccc",
     borderBottomWidth: 1,
   },
   avatar: {
@@ -177,21 +195,21 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   button: {
-    backgroundColor: '#333',
+    backgroundColor: "#333",
     borderRadius: 25,
     paddingVertical: 8,
     paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center', // Add this line
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center", // Add this line
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginLeft: 8,
   },
 });

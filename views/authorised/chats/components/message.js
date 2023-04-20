@@ -41,11 +41,6 @@ export default function Message({
       setPrevAuthor(null);
     }
   }, [message, prevAuthor]);
-  // function formatTimestamp(timestamp) {
-  //   const date = new Date(timestamp);
-  //   const timeOptions = { hour: "numeric", minute: "numeric" };
-  //   return date.toLocaleTimeString([], timeOptions);
-  // }
 
   const senderBackgroundColor = "#1982FC";
   const receiverBackgroundColor =
@@ -89,28 +84,6 @@ export default function Message({
   if (message.author.user_id === parseInt(user_id)) {
     if (isLastItem.lastItem) {
       return (
-        // <>
-        //   <TouchableOpacity onPress={handlePress}>
-        //     <View
-        //       style={[
-        //         styles.container,
-        //         styles.senderMessage,
-        //         { backgroundColor: senderBackgroundColor },
-        //       ]}
-        //     >
-        //       <Text key={message.timestamp} style={styles.message}>
-        //         {message.message}{" "}
-        //         {/* <Text style={styles.timestamp}>
-        //         {formatTimestamp(message.timestamp)}{" "}
-        //       </Text> */}
-        //       </Text>
-        //     </View>
-        //     <Text style={styles.timeSender}>
-        //       {formatTimestamp(message.timestamp)}
-        //     </Text>
-        //   </TouchableOpacity>
-        // </>
-
         <>
           <TouchableOpacity onPress={handlePress}>
             <View
@@ -122,9 +95,6 @@ export default function Message({
             >
               <Text key={message.timestamp} style={styles.message}>
                 {message.message}{" "}
-                {/* <Text style={styles.timestamp}>
-    {formatTimestamp(message.timestamp)}{" "}
-  </Text> */}
               </Text>
               {showOptions && (
                 <View style={styles.optionsContainer}>
