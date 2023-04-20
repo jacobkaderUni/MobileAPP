@@ -1,6 +1,5 @@
 import React from "react";
 import { Image, StyleSheet } from "react-native-web";
-import DisplayImage from "../cameraHandling.s/Display";
 export default function Avatar(image) {
   if (image) {
     console.log(image);

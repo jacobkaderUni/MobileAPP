@@ -7,36 +7,15 @@ import {
   Modal,
   Text,
   TouchableOpacity,
-  Image,
-  Switch,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import FeatherIcon from "react-native-vector-icons/Feather";
-
 import EditProfileModal from "./components/EditProfileModal";
-import Avatar from "./components/Avatar";
-import BodyContent from "./components/BodyContent";
-import Header from "./components/Header";
 import ProfileData from "./components/ProfileData";
 import { useAuth } from "../../../navigator/AuthContext";
 import logoutUser from "../../../services/api/userManagment/logoutUser";
 import Loading from "../../Loading";
-import getImage from "../../../services/api/userManagment/getImage";
 import DisplayImage from "./cameraHandling.s/Display";
-const SECTIONS = [
-  {
-    header: "Preferences",
-    icon: "settings",
-    items: [
-      { icon: "globe", color: "#fe9400", label: "Language", type: "link" },
-    ],
-  },
-  {
-    header: "Help",
-    icon: "help-circle",
-    items: [{ icon: "user", color: "#8e8d91", label: "Logout", type: "link" }],
-  },
-];
 
 export default function Settings2() {
   const [userId, setUserId] = useState();

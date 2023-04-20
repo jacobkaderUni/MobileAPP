@@ -21,12 +21,9 @@ import Loading from "../../Loading";
 import Message from "./components/message";
 import ChatDetailsModal from "./components/ChatDetailsModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { green } from "../../unauthorised/components/Constants";
 import generateColorCode from "./components/generateColorCode";
 import Circle from "./components/Circle";
 import getInitials from "./components/getInitials";
-import formatTimestamp from "./components/ConvertTime";
-import DisplayImage from "../account/cameraHandling.s/Display";
 export default function OpenedChat({ route }) {
   const navigation = useNavigation();
   const { chat, id } = route.params;
@@ -43,10 +40,7 @@ export default function OpenedChat({ route }) {
     navigation.setOptions({
       headerTitle: chat.data.name,
       headerTitleAlign: "center",
-      headerStyle: {
-        // borderBottomLeftRadius: 20,
-        // borderBottomRightRadius: 20,
-      },
+      headerStyle: {},
       headerRight: () => (
         <TouchableOpacity onPress={() => openModal()}>
           <SimpleLineIcons name="options-vertical" size={24} color="black" />
@@ -78,17 +72,8 @@ export default function OpenedChat({ route }) {
     const response = await getChatInfo(id);
     if (response) {
       setCurrentUser(user);
-      // console.log(user);
-      // console.log(response);
       setMessages(sortMessagesByTimestamp(response.data.messages));
       setIsLoading(false);
-    }
-  };
-
-  const handleAddUser = async (user_id) => {
-    const response = await addUserToChat(user_id);
-    if (response) {
-      //   console.log(response);
     }
   };
 
@@ -126,22 +111,12 @@ export default function OpenedChat({ route }) {
     return messages.sort((a, b) => a.timestamp - b.timestamp);
   }
 
-  // const groupedMessages = groupBy(messages, (message) => {
-  //   const date = new Date(message.timestamp);
-  //   return date.toDateString();
-  // });
-
   const groupedMessages = groupBy(messages, (message) => {
     if (!isLoading) {
       const date = new Date(message.timestamp);
       return date.toDateString();
     }
   });
-
-  // const sections = Object.entries(groupedMessages).map(([title, data]) => ({
-  //   title,
-  //   data,
-  // }));
 
   const sections = Object.entries(groupedMessages).map(([title, data]) => {
     const authorData = Object.values(

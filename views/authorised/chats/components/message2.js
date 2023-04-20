@@ -1,13 +1,5 @@
-import { GiftedChat } from "react-native-gifted-chat";
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  Textarea,
-  TextInput,
-} from "react-native";
+import { View, Text, StyleSheet, Button, TextInput } from "react-native";
 
 function generateColorCode(name) {
   const hash = name.split("").reduce((acc, char) => {

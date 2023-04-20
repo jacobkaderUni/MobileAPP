@@ -49,13 +49,6 @@ export default function User({ contact, addContact }) {
 
 const styles = StyleSheet.create({
   container: {
-    // paddingVertical: 14,
-    // flexDirection: 'row',
-    // alignItems: 'center',
-    // justifyContent: 'flex-start',
-    // borderBottomWidth: 1,
-    // borderColor: '#d6d6d6',
-    // height: 75,
     paddingHorizontal: 4,
     paddingVertical: 14,
     backgroundColor: "white",

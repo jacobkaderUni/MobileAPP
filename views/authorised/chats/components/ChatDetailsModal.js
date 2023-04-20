@@ -14,6 +14,7 @@ import updateChat from "../../../../services/api/chatManagment/updateChat";
 import removeUserFromChat from "../../../../services/api/chatManagment/removeUserFromChat";
 import Loading from "../../../Loading";
 import DisplayImage from "../../account/cameraHandling.s/Display";
+
 export default function ChatDetailsModal({ item, id, closeDetails }) {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

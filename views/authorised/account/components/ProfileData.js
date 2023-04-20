@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import getUserInfo from "../../../../services/api/userManagment/getUserInfo";
-import getImage from "../../../../services/api/userManagment/getImage";
+
 export default function ProfileData({
   isLoading,
   setIsLoading,

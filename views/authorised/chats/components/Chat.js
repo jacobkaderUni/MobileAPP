@@ -19,7 +19,6 @@ export default function Chat({ chat, getChat }) {
           <Text style={styles.cardAvatarText}>{chat.chat_id}</Text>
         </View>
 
-        {/* <TouchableOpacity onPress={() => getChatInfo()}> */}
         <View style={styles.cardBody}>
           <Text style={styles.cardTitle}>{chat.name}</Text>
           {chat.last_message.author && (
@@ -37,8 +36,6 @@ export default function Chat({ chat, getChat }) {
             </Text>
           )}
         </View>
-
-        {/* <Text>OPEN</Text> */}
       </View>
     </TouchableOpacity>
   );

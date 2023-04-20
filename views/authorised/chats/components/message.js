@@ -10,7 +10,7 @@ import {
 import generateColorCode from "./generateColorCode";
 import formatTimestamp from "./ConvertTime";
 import { Modal } from "react-native-web";
-import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Message({
   message,
@@ -18,7 +18,6 @@ export default function Message({
   user_id,
   updateMessage,
   deleteMessage,
-  previousMessage,
   lastItem,
 }) {
   const [prevAuthor, setPrevAuthor] = useState(null);
@@ -57,7 +56,6 @@ export default function Message({
       message: message.message,
     });
     const handleUpdate = () => {
-      //console.log("editedMessage", editedMessage);
       updateMessage(editedMessage, chat_id, message.message_id);
       setIsEditing(false);
       setShowOptions(false);
@@ -136,9 +134,6 @@ export default function Message({
           >
             <Text key={message.timestamp} style={styles.message}>
               {message.message}{" "}
-              {/* <Text style={styles.timestamp}>
-            {formatTimestamp(message.timestamp)}{" "}
-          </Text> */}
             </Text>
             {showOptions && (
               <View style={styles.optionsContainer}>
@@ -179,9 +174,6 @@ export default function Message({
           >
             <Text key={message.timestamp} style={styles.message}>
               {message.message}{" "}
-              {/* <Text style={styles.timestamp}>
-                {formatTimestamp(message.timestamp)}{" "}
-              </Text> */}
             </Text>
           </View>
         </View>
@@ -201,9 +193,6 @@ export default function Message({
           <>
             <Text key={message.timestamp} style={styles.message}>
               {message.message}{" "}
-              {/* <Text style={styles.timestamp}>
-                {formatTimestamp(message.timestamp)}{" "}
-              </Text> */}
             </Text>
           </>
         </View>

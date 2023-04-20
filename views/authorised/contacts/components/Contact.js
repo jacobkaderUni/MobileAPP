@@ -22,9 +22,6 @@ export default function Contact({
   const blockedArray = ["unBlock", "Delete", "Cancel"];
   const actions = type ? contactsArray : blockedArray;
   let actionSheet = useRef();
-  // const showActionSheet = () => {
-  //   actionSheet.current.show();
-  // };
 
   const showActionSheet = () => {
     Animated.timing(new Animated.Value(0), {
@@ -142,39 +139,3 @@ const styles = StyleSheet.create({
   unBlockBtn: {},
   addBtn: {},
 });
-
-// {onBlock && (
-//   <TouchableOpacity
-//     onPress={() => blockContactHandler(true)}
-//     style={styles.blockBtn}
-//   >
-//     {/* <Entypo name="block" size={24} color="black" /> */}
-//     <Text> block </Text>
-//   </TouchableOpacity>
-// )}
-
-// {onDelete && (
-//   <TouchableOpacity
-//     onPress={() => deleteContactHandler(true)}
-//     style={styles.deleteBtn}
-//   >
-//     {/* <AntDesign name="delete" size={24} color="red" /> */}
-//     <Text> delete </Text>
-//   </TouchableOpacity>
-// )}
-
-// {onUnBlock && (
-//   <TouchableOpacity
-//     onPress={() => unBlockHandler(true)}
-//     styles={styles.unBlockBtn}
-//   >
-//     {/* <Entypo name="circle-with-cross" size={24} color="black" /> */}
-//     <Text> unBlock </Text>
-//   </TouchableOpacity>
-// )}
-// {onAdd && (
-//   <TouchableOpacity onPress={() => onAddHandler()} styles={styles.addBtn}>
-//     {/* <AntDesign name="plus" size={24} color="black" /> */}
-//     <Text> Add </Text>
-//   </TouchableOpacity>
-// )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,20 +8,19 @@ import {
   Modal,
   TextInput,
   ScrollView,
-} from 'react-native';
-import { Ionicons, SimpleLineIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { groupBy, max } from 'lodash';
-import sendMessage from '../../../services/api/chatManagment/sendMessage';
-import getChatInfo from '../../../services/api/chatManagment/getChatInfo';
-import addUserToChat from '../../../services/api/chatManagment/addUserToChat';
-import updateMesssage from '../../../services/api/chatManagment/updateMessage';
-import deleteMessage from '../../../services/api/chatManagment/deleteMessage';
-import Loading from '../../Loading';
-import Message from './components/message';
-import ChatDetailsModal from './components/ChatDetailsModal';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { green } from '../../unauthorised/components/Constants';
+} from "react-native";
+import { Ionicons, SimpleLineIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { groupBy, max } from "lodash";
+import sendMessage from "../../../services/api/chatManagment/sendMessage";
+import getChatInfo from "../../../services/api/chatManagment/getChatInfo";
+import addUserToChat from "../../../services/api/chatManagment/addUserToChat";
+import updateMesssage from "../../../services/api/chatManagment/updateMessage";
+import deleteMessage from "../../../services/api/chatManagment/deleteMessage";
+import Loading from "../../Loading";
+import Message from "./components/message";
+import ChatDetailsModal from "./components/ChatDetailsModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function OpenedChat({ route }) {
   const navigation = useNavigation();
@@ -31,14 +30,14 @@ export default function OpenedChat({ route }) {
   const [details, setDetails] = useState([]);
   const [messages, setMessages] = useState([]);
   const [message, setmessage] = useState({
-    message: '',
+    message: "",
   });
-  const [currentUser, setCurrentUser] = useState('');
+  const [currentUser, setCurrentUser] = useState("");
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: chat.data.name,
-      headerTitleAlign: 'center',
+      headerTitleAlign: "center",
       headerStyle: {
         // borderBottomLeftRadius: 20,
         // borderBottomRightRadius: 20,
@@ -65,12 +64,12 @@ export default function OpenedChat({ route }) {
     const response = await sendMessage(text, chat_id);
     if (response) {
       handleGetChat();
-      setmessage({ message: '' });
+      setmessage({ message: "" });
     }
   };
 
   const handleGetChat = async () => {
-    const user = await AsyncStorage.getItem('whatsthat_user_id');
+    const user = await AsyncStorage.getItem("whatsthat_user_id");
     const response = await getChatInfo(id);
     if (response) {
       setCurrentUser(user);
@@ -139,7 +138,11 @@ export default function OpenedChat({ route }) {
       ) : (
         <View style={{ flex: 1 }}>
           <Modal visible={chatDetails}>
-            <ChatDetailsModal item={details} id={id} closeDetails={closeModal} />
+            <ChatDetailsModal
+              item={details}
+              id={id}
+              closeDetails={closeModal}
+            />
           </Modal>
           <ScrollView>
             <View style={{ height: max }}>
@@ -180,35 +183,35 @@ export default function OpenedChat({ route }) {
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
-    backgroundColor: '#fff',
+    height: "100%",
+    backgroundColor: "#fff",
     paddingHorizontal: 16,
     paddingTop: 0,
   },
   sectionHeader: {
-    backgroundColor: '#e9eaec',
+    backgroundColor: "#e9eaec",
     padding: 10,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 16,
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderTopWidth: 1,
-    borderTopColor: '#e9eaec',
+    borderTopColor: "#e9eaec",
   },
   searchBox: {
     borderRadius: 25,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingVertical: 8,
     paddingHorizontal: 16,
     fontSize: 16,
     flex: 1,
     marginRight: 10,
     borderWidth: 1,
-    borderColor: '#d4d4d4',
+    borderColor: "#d4d4d4",
   },
 });

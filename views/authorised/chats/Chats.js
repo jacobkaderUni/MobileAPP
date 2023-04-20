@@ -8,7 +8,7 @@ import {
   Button,
 } from "react-native";
 import { Modal, TouchableOpacity } from "react-native-web";
-import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import getChats from "../../../services/api/chatManagment/getChats";
 import Chat from "./components/Chat";
 import startChat from "../../../services/api/chatManagment/startChat";
@@ -16,9 +16,8 @@ import getChatInfo from "../../../services/api/chatManagment/getChatInfo";
 import { useNavigation } from "@react-navigation/native";
 import { useIsFocused } from "@react-navigation/native";
 import Loading from "../../Loading";
-import { green } from "../../unauthorised/components/Constants";
 import FeatherIcon from "react-native-vector-icons/Feather";
-import Icon from "react-native-feather1s";
+
 export default function Chats() {
   const isFocused = useIsFocused();
   const [isLoading, setIsLoading] = useState(true);
