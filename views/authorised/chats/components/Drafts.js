@@ -5,6 +5,78 @@ import { Ionicons } from "@expo/vector-icons";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+// const Drafts = ({ id, handleMessage, setShowDrafts }) => {
+//   const [drafts, setDrafts] = useState([]);
+//   const [draftsLoading, setDraftsLoading] = useState(true);
+
+//   useEffect(() => {
+//     if (draftsLoading) {
+//       getdrafts();
+//     }
+//   }, [draftsLoading]);
+
+//   const getdrafts = async () => {
+//     const drafts = await AsyncStorage.getItem(id);
+//     setDrafts(JSON.parse(drafts));
+//     setDraftsLoading(false);
+//   };
+
+//   const sendDraft = async (index) => {
+//     handleMessage({ message: drafts[index] }, id);
+//     const updatedDrafts = drafts.filter((_, i) => i !== index);
+//     setDrafts(updatedDrafts);
+//     await AsyncStorage.setItem(id, JSON.stringify(updatedDrafts));
+//   };
+
+//   const deleteDraft = async (index) => {
+//     const updatedDrafts = drafts.filter((_, i) => i !== index);
+//     setDrafts(updatedDrafts);
+//     await AsyncStorage.setItem(id, JSON.stringify(updatedDrafts));
+//   };
+
+//   const renderItem = ({ item, index }) => (
+//     <View style={styles.item}>
+//       <Text>{item}</Text>
+//       <View style={styles.buttonContainer}>
+//         <TouchableOpacity
+//           style={[styles.sendButtonModal, { backgroundColor: "red" }]}
+//           onPress={() => deleteDraft(index)}
+//         >
+//           <Text style={styles.sendButtonText}>Delete</Text>
+//         </TouchableOpacity>
+//         <TouchableOpacity
+//           style={styles.sendButtonModal}
+//           onPress={() => sendDraft(index)}
+//         >
+//           <Text style={styles.sendButtonText}>Send</Text>
+//         </TouchableOpacity>
+//       </View>
+//     </View>
+//   );
+
+//   return (
+//     <View style={styles.modalContainer}>
+//       <View style={styles.headerContainer}>
+//         <Text style={styles.headerText}>Drafts</Text>
+//         <TouchableOpacity
+//           style={styles.closeButton}
+//           onPress={() => setShowDrafts(false)}
+//         >
+//           <Ionicons name="close" size={24} color="black" />
+//         </TouchableOpacity>
+//       </View>
+
+//       <FlatList
+//         data={drafts}
+//         renderItem={renderItem}
+//         keyExtractor={(item, index) => index.toString()}
+//       />
+//     </View>
+//   );
+// };
+
+// export default Drafts;
+
 const Drafts = ({ id, handleMessage, setShowDrafts }) => {
   const [drafts, setDrafts] = useState([]);
   const [draftsLoading, setDraftsLoading] = useState(true);
@@ -17,12 +89,13 @@ const Drafts = ({ id, handleMessage, setShowDrafts }) => {
 
   const getdrafts = async () => {
     const drafts = await AsyncStorage.getItem(id);
+    console.log("drafts", drafts);
     setDrafts(JSON.parse(drafts));
     setDraftsLoading(false);
   };
 
   const sendDraft = async (index) => {
-    handleMessage({ message: drafts[index] }, id);
+    handleMessage({ message: drafts[index].message }, id);
     const updatedDrafts = drafts.filter((_, i) => i !== index);
     setDrafts(updatedDrafts);
     await AsyncStorage.setItem(id, JSON.stringify(updatedDrafts));
@@ -36,7 +109,7 @@ const Drafts = ({ id, handleMessage, setShowDrafts }) => {
 
   const renderItem = ({ item, index }) => (
     <View style={styles.item}>
-      <Text>{item}</Text>
+      <Text>{item.message}</Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={[styles.sendButtonModal, { backgroundColor: "red" }]}
@@ -60,7 +133,7 @@ const Drafts = ({ id, handleMessage, setShowDrafts }) => {
         <Text style={styles.headerText}>Drafts</Text>
         <TouchableOpacity
           style={styles.closeButton}
-          onPress={() => setShowDrafts(false)}
+          onPress={() => setShowDrafts()}
         >
           <Ionicons name="close" size={24} color="black" />
         </TouchableOpacity>
@@ -78,52 +151,6 @@ const Drafts = ({ id, handleMessage, setShowDrafts }) => {
 export default Drafts;
 
 const styles = StyleSheet.create({
-  container: {
-    height: "100%",
-    backgroundColor: "#fff",
-    paddingHorizontal: 6,
-    paddingTop: 0,
-  },
-  sendButton: {
-    position: "absolute",
-    right: 10,
-    color: "red",
-  },
-  sectionHeader: {
-    // backgroundColor: "rgba(0, 0, 0, 0.6)",
-    alignSelf: "center",
-    borderRadius: 5,
-    padding: 5,
-    marginBottom: 10,
-  },
-  sectionHeaderText: {
-    color: "rgba(0, 0, 0, 0.6)",
-    // fontWeight: "bold",
-    fontSize: 12,
-    textAlign: "center",
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    paddingHorizontal: 0,
-    paddingVertical: 5,
-    borderTopWidth: 1,
-    borderTopColor: "#e9eaec",
-  },
-  searchBox: {
-    borderRadius: 25,
-    backgroundColor: "#fff",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    flex: 1,
-    marginRight: 0,
-    borderWidth: 1,
-    borderColor: "#d4d4d4",
-    opacity: 0.5,
-  },
-  overlay: { height: "100%", backgroundColor: "rgba(0, 0, 0, 0.5)" },
   modalContainer: {
     backgroundColor: "#fff",
     padding: 20,

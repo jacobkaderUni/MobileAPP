@@ -17,12 +17,15 @@ import { useNavigation } from "@react-navigation/native";
 import { useIsFocused } from "@react-navigation/native";
 import Loading from "../../Loading";
 import FeatherIcon from "react-native-vector-icons/Feather";
-
+import DraftSender from "./components/checkTimestamps";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import sendMessage from "../../../services/api/chatManagment/sendMessage";
 export default function Chats() {
   const isFocused = useIsFocused();
   const [isLoading, setIsLoading] = useState(true);
   const [chats, setChats] = useState([]);
   const [createChatModel, setCreateChatModel] = useState(false);
+  const [chatIds, setChatIds] = useState([]);
   const navigation = useNavigation();
 
   React.useLayoutEffect(() => {
@@ -57,19 +60,28 @@ export default function Chats() {
     if (isFocused) {
       handleGetChats();
     }
+    const intervalId = setInterval(() => {
+      handleGetChats();
+      console.log("checking drafts");
+    }, 60000);
+
+    return () => clearInterval(intervalId);
   }, [isFocused]);
 
   const handleGetChats = async () => {
-    const response = await getChats();
-    console.log(response);
-    if (response.status === 200) {
-      setChats(response.data);
-      setIsLoading(false);
-      if (createChatModel) {
-        setCreateChatModel(false);
+    try {
+      const response = await getChats();
+      if (response.status === 200) {
+        setChats(response.data);
+        const ids = response.data?.map((chat) => chat.chat_id);
+        sendDueDrafts(ids);
+        setIsLoading(false);
+        if (createChatModel) {
+          setCreateChatModel(false);
+        }
       }
-    } else {
-      console.log("no chats ");
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -80,6 +92,38 @@ export default function Chats() {
       navigation.navigate("OpenedChat", { chat: response, id: newid });
     }
   };
+  //////////
+
+  const sendDueDrafts = async (ids) => {
+    for (const chatId of ids) {
+      const draftsJson = await AsyncStorage.getItem(chatId);
+      const drafts = JSON.parse(draftsJson) || [];
+      drafts.forEach(async (draft) => {
+        const timestamp = new Date(draft.timestamp);
+        const now = new Date();
+
+        if (draft.timestamp !== null) {
+          if (now >= timestamp) {
+            console.log("Draft sent:" + draft.message);
+            sendMessage({ message: draft.message }, chatId);
+
+            const newDrafts = drafts.filter(
+              (d) => d.timestamp !== draft.timestamp
+            );
+            // console.log(newDrafts);
+            await AsyncStorage.setItem(chatId, JSON.stringify(newDrafts));
+          }
+        }
+      });
+    }
+  };
+
+  // const sendDraft = async (index) => {
+  //   handleMessage({ message: drafts[index].message }, id);
+  //   const updatedDrafts = drafts.filter((_, i) => i !== index);
+  //   setDrafts(updatedDrafts);
+  //   await AsyncStorage.setItem(id, JSON.stringify(updatedDrafts));
+  // };
 
   //////////
   const CreateChatScreen = () => {
@@ -115,9 +159,9 @@ export default function Chats() {
       </View>
     );
   };
-  const renderItem = ({ item }) => (
-    <Chat chat={item} getChat={() => handleOpenChat(item.chat_id)} />
-  );
+  const renderItem = ({ item }) => {
+    return <Chat chat={item} getChat={() => handleOpenChat(item.chat_id)} />;
+  };
 
   return (
     <View style={styles.container}>
@@ -141,6 +185,7 @@ export default function Chats() {
         visible={createChatModel}
         onPress={() => handleOpenChat(item.chat_id)}
       >
+        <DraftSender chatIds={chatIds} />
         <View style={styles.overlay}>
           <CreateChatScreen />
         </View>

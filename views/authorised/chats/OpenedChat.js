@@ -12,7 +12,7 @@ import {
 import { FlatList } from "react-native-web";
 import { Ionicons, SimpleLineIcons, FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { groupBy, max } from "lodash";
+import { groupBy, max, set } from "lodash";
 import sendMessage from "../../../services/api/chatManagment/sendMessage";
 import getChatInfo from "../../../services/api/chatManagment/getChatInfo";
 import addUserToChat from "../../../services/api/chatManagment/addUserToChat";
@@ -26,6 +26,9 @@ import generateColorCode from "./components/generateColorCode";
 import Circle from "./components/Circle";
 import getInitials from "./components/getInitials";
 import Drafts from "./components/Drafts";
+import moment from "moment";
+// import SetDateTimeModal from "./components/DraftSetTime";
+import ModaleDT from "./components/DraftSetTime";
 export default function OpenedChat({ route }) {
   const navigation = useNavigation();
   const { chat, id } = route.params;
@@ -38,6 +41,9 @@ export default function OpenedChat({ route }) {
   const [message, setmessage] = useState({
     message: "",
   });
+
+  const [currentDraft, setCurrentDraft] = useState("");
+  const [showDateTime, setShowDateTime] = useState(false);
   const [currentUser, setCurrentUser] = useState("");
 
   React.useLayoutEffect(() => {
@@ -67,8 +73,9 @@ export default function OpenedChat({ route }) {
   useEffect(() => {
     if (isLoading) {
       handleGetChat();
+      getDrafts();
     }
-  }, [chat, id, isLoading]);
+  }, [chat, id, isLoading, draftMessages]);
 
   const handleTyping = (text) => {
     setmessage({ message: text });
@@ -77,6 +84,7 @@ export default function OpenedChat({ route }) {
   const handleMessage = async (text, chat_id) => {
     const response = await sendMessage(text, chat_id);
     if (response) {
+      console.log(response);
       handleGetChat();
       setmessage({ message: "" });
     }
@@ -182,23 +190,52 @@ export default function OpenedChat({ route }) {
     );
   };
 
-  const handleSaveDraft = async () => {
+  const handlecloseModal = async () => {
+    getDrafts();
+    setShowDrafts(false);
+  };
+
+  const getDrafts = async () => {
     try {
+      const drafts = await AsyncStorage.getItem(id);
+      if (drafts) {
+        setDraftMessages(JSON.parse(drafts));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSaveDraftWithTimestamp = async (date) => {
+    try {
+      getDrafts();
       if (message.message.trim() === "") {
         // If the message is empty, do not save it as a draft
         return;
       }
-      // Add the current draft message to the draft messages array
-      const newDraftMessages = [...draftMessages, message.message];
+      // Create a new draft object that includes the message and the selected timestamp
+
+      const newDraft = { message: currentDraft, timestamp: date };
+      // Add the current draft object to the draft messages array
+      const newDraftMessages = [...draftMessages, newDraft];
       // Store the draft messages array in AsyncStorage
       await AsyncStorage.setItem(id, JSON.stringify(newDraftMessages));
-      // Update the state with the new draft messages
+      // Update the draft messages state
       setDraftMessages(newDraftMessages);
-      setmessage({ message: "" });
+      // Close the DateTime modal
+      setShowDateTime(false);
     } catch (error) {
-      // Handle the error
-      console.error(error);
+      console.log(error);
     }
+  };
+
+  const handleSaveDraft = () => {
+    if (message.message.trim() === "") {
+      // If the message is empty, do not save it as a draft
+      return;
+    }
+    setShowDateTime(true);
+    setCurrentDraft(message.message);
   };
 
   return (
@@ -225,8 +262,22 @@ export default function OpenedChat({ route }) {
               <Drafts
                 id={id}
                 handleMessage={handleMessage}
-                setShowDrafts={setShowDrafts}
+                setShowDrafts={handlecloseModal}
               />
+            </View>
+          </Modal>
+          <Modal
+            transparent={true}
+            animationIn="fadeIn"
+            animationOut="fadeOut"
+            visible={showDateTime}
+          >
+            <View style={styles.overlay}>
+              <ModaleDT
+                onSetDateTime={handleSaveDraftWithTimestamp}
+                setShowModal={setShowDateTime}
+              />
+              {/* <SetDateTimeModal /> */}
             </View>
           </Modal>
           <ScrollView>
@@ -246,7 +297,7 @@ export default function OpenedChat({ route }) {
             </View>
           </ScrollView>
           <View style={styles.inputContainer}>
-            <TouchableOpacity onPress={() => handleSaveDraft(message, id)}>
+            <TouchableOpacity onPress={() => handleSaveDraft()}>
               <FontAwesome name="edit" size={24} color="black" />
             </TouchableOpacity>
             <TextInput
