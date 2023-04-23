@@ -224,6 +224,8 @@ export default function OpenedChat({ route }) {
       setDraftMessages(newDraftMessages);
       // Close the DateTime modal
       setShowDateTime(false);
+
+      setmessage({ message: "" });
     } catch (error) {
       console.log(error);
     }

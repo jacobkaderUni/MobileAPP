@@ -13,7 +13,7 @@ const DisplayImage = ({ user_id, type }) => {
 
   const getProfileImage = async () => {
     // let userId = await AsyncStorage.getItem("whatsthat_user_id");
-    console.log(`${BASE_URL}user/${user_id}/photo`);
+    // console.log(`${BASE_URL}user/${user_id}/photo`);
     fetch(`${BASE_URL}user/${user_id}/photo`, {
       method: "GET",
       headers: {
