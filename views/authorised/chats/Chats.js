@@ -57,7 +57,7 @@ export default function Chats() {
   }, [navigation]);
 
   useEffect(() => {
-    if (isFocused) {
+    if (isFocused || isLoading) {
       handleGetChats();
     }
     const intervalId = setInterval(() => {
@@ -66,7 +66,7 @@ export default function Chats() {
     }, 60000);
 
     return () => clearInterval(intervalId);
-  }, [isFocused]);
+  }, [isFocused, isLoading]);
 
   const handleGetChats = async () => {
     try {
@@ -81,7 +81,13 @@ export default function Chats() {
         }
       }
     } catch (error) {
-      console.log(error);
+      if (error.code === 999) {
+        setChats([]);
+        sendDueDrafts([]);
+        setIsLoading(false);
+      } else {
+        console.log(error);
+      }
     }
   };
 
@@ -146,7 +152,12 @@ export default function Chats() {
 
     return (
       <View style={styles.modalContainer}>
-        <TouchableOpacity onPress={() => setCreateChatModel(false)}>
+        <TouchableOpacity
+          onPress={() => {
+            setCreateChatModel(false);
+            setIsLoading(true);
+          }}
+        >
           <Ionicons name="close" size={24} color="black" />
         </TouchableOpacity>
         <TextInput

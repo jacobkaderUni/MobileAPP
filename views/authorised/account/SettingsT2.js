@@ -16,6 +16,8 @@ import { useAuth } from "../../../navigator/AuthContext";
 import logoutUser from "../../../services/api/userManagment/logoutUser";
 import Loading from "../../Loading";
 import DisplayImage from "./cameraHandling.s/Display";
+import { useNavigation } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function Settings2() {
   const [userId, setUserId] = useState();
@@ -29,6 +31,7 @@ export default function Settings2() {
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [_, setUser] = useAuth();
+  const navigation = useNavigation();
 
   const onSubmitLogout = async () => {
     try {
@@ -48,6 +51,7 @@ export default function Settings2() {
   const closeModal = () => {
     setShowModal(false);
   };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ProfileData
@@ -63,17 +67,14 @@ export default function Settings2() {
       ) : (
         <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.profile}>
-            <TouchableOpacity
-              onPress={() => {
-                // handle onPress
-              }}
-            >
+            <TouchableOpacity onPress={() => {}}>
               <View style={styles.profileAvatarWrapper}>
                 <DisplayImage user_id={userId} type={"1"} />
 
                 <TouchableOpacity
                   onPress={() => {
                     // handle onPress
+                    navigation.navigate("Camera");
                   }}
                 >
                   <View style={styles.profileAction}>

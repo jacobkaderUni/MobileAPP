@@ -2,14 +2,22 @@ import React, { useState, useEffect } from "react";
 import { Image, Text, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BASE_URL } from "@env";
+import { useIsFocused } from "@react-navigation/native";
 
 const DisplayImage = ({ user_id, type }) => {
   const [photo, setPhoto] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const isFocused = useIsFocused();
+  // useEffect(() => {
+  //   getProfileImage();
+  // }, []);
 
   useEffect(() => {
-    getProfileImage();
-  }, []);
+    if (isFocused) {
+      setIsLoading(true);
+      getProfileImage();
+    }
+  }, [isFocused]);
 
   const getProfileImage = async () => {
     // let userId = await AsyncStorage.getItem("whatsthat_user_id");
