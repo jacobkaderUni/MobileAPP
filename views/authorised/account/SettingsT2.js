@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -7,54 +7,41 @@ import {
   Modal,
   Text,
   TouchableOpacity,
-  Image,
-  Switch,
-} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import FeatherIcon from 'react-native-vector-icons/Feather';
-
-import EditProfileModal from './components/EditProfileModal';
-import Avatar from './components/Avatar';
-import BodyContent from './components/BodyContent';
-import Header from './components/Header';
-import ProfileData from './components/ProfileData';
-import { useAuth } from '../../../navigator/AuthContext';
-import logoutUser from '../../../services/api/userManagment/logoutUser';
-import Loading from '../../Loading';
-const SECTIONS = [
-  {
-    header: 'Preferences',
-    icon: 'settings',
-    items: [{ icon: 'globe', color: '#fe9400', label: 'Language', type: 'link' }],
-  },
-  {
-    header: 'Help',
-    icon: 'help-circle',
-    items: [{ icon: 'user', color: '#8e8d91', label: 'Logout', type: 'link' }],
-  },
-];
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import FeatherIcon from "react-native-vector-icons/Feather";
+import EditProfileModal from "./components/EditProfileModal";
+import ProfileData from "./components/ProfileData";
+import { useAuth } from "../../../navigator/AuthContext";
+import logoutUser from "../../../services/api/userManagment/logoutUser";
+import Loading from "../../Loading";
+import DisplayImage from "./cameraHandling.s/Display";
+import { useNavigation } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function Settings2() {
   const [userId, setUserId] = useState();
   const [userDetails, setUserDetails] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    password: '',
+    first_name: "",
+    last_name: "",
+    email: "",
+    password: "",
   });
+  const [image, setImage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [_, setUser] = useAuth();
+  const navigation = useNavigation();
 
   const onSubmitLogout = async () => {
     try {
       const response = await logoutUser();
       if (response.status === 200) {
         setUser();
-        AsyncStorage.removeItem('whatsthat_user_id');
-        AsyncStorage.removeItem('whatsthat_session_token');
+        AsyncStorage.removeItem("whatsthat_user_id");
+        AsyncStorage.removeItem("whatsthat_session_token");
       } else {
-        console.log('didnt logout, try again');
+        console.log("didnt logout, try again");
       }
     } catch (error) {
       console.log(error);
@@ -64,6 +51,7 @@ export default function Settings2() {
   const closeModal = () => {
     setShowModal(false);
   };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ProfileData
@@ -72,23 +60,21 @@ export default function Settings2() {
         setUserId={setUserId}
         userDetails={userDetails}
         setUserDetails={setUserDetails}
+        setImage={setImage}
       />
       {isLoading ? (
         <Loading />
       ) : (
         <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.profile}>
-            <TouchableOpacity
-              onPress={() => {
-                // handle onPress
-              }}
-            >
+            <TouchableOpacity onPress={() => {}}>
               <View style={styles.profileAvatarWrapper}>
-                <Avatar />
+                <DisplayImage user_id={userId} type={"1"} />
 
                 <TouchableOpacity
                   onPress={() => {
                     // handle onPress
+                    navigation.navigate("Camera");
                   }}
                 >
                   <View style={styles.profileAction}>
@@ -115,8 +101,8 @@ export default function Settings2() {
               }}
             >
               <View style={styles.row}>
-                <View style={[styles.rowIcon, { backgroundColor: '#8e8d91' }]}>
-                  <FeatherIcon color="#fff" size={18} name={'user'} />
+                <View style={[styles.rowIcon, { backgroundColor: "#8e8d91" }]}>
+                  <FeatherIcon color="#fff" size={18} name={"user"} />
                 </View>
                 <Text style={styles.rowLabel}>Edit profile details</Text>
                 <View style={styles.rowSpacer} />
@@ -131,8 +117,8 @@ export default function Settings2() {
               }}
             >
               <View style={styles.row}>
-                <View style={[styles.rowIcon, { backgroundColor: '#fe9400' }]}>
-                  <FeatherIcon color="#fff" size={18} name={'globe'} />
+                <View style={[styles.rowIcon, { backgroundColor: "#fe9400" }]}>
+                  <FeatherIcon color="#fff" size={18} name={"globe"} />
                 </View>
                 <Text style={styles.rowLabel}>Language</Text>
                 <View style={styles.rowSpacer} />
@@ -142,8 +128,8 @@ export default function Settings2() {
             <Text style={styles.sectionHeader}>....</Text>
             <TouchableOpacity onPress={() => onSubmitLogout()}>
               <View style={styles.row}>
-                <View style={[styles.rowIcon, { backgroundColor: '#8e8d91' }]}>
-                  <FeatherIcon color="#fff" size={18} name={'log-out'} />
+                <View style={[styles.rowIcon, { backgroundColor: "#8e8d91" }]}>
+                  <FeatherIcon color="#fff" size={18} name={"log-out"} />
                 </View>
                 <Text style={styles.rowLabel}>Logout</Text>
                 <View style={styles.rowSpacer} />
@@ -151,7 +137,11 @@ export default function Settings2() {
               </View>
             </TouchableOpacity>
             <Modal visible={showModal}>
-              <EditProfileModal close={closeModal} userId={userId} logout={onSubmitLogout} />
+              <EditProfileModal
+                close={closeModal}
+                userId={userId}
+                logout={onSubmitLogout}
+              />
             </Modal>
           </View>
         </ScrollView>
@@ -170,17 +160,17 @@ const styles = StyleSheet.create({
   sectionHeader: {
     paddingVertical: 12,
     fontSize: 12,
-    fontWeight: '600',
-    color: '#9e9e9e',
-    textTransform: 'uppercase',
+    fontWeight: "600",
+    color: "#9e9e9e",
+    textTransform: "uppercase",
     letterSpacing: 1.1,
   },
   profile: {
     padding: 24,
-    backgroundColor: '#fff',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
   },
   profileAvatar: {
     width: 72,
@@ -188,38 +178,38 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
   },
   profileAvatarWrapper: {
-    position: 'relative',
+    position: "relative",
   },
   profileAction: {
-    position: 'absolute',
+    position: "absolute",
     right: -4,
     bottom: -10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     width: 28,
     height: 28,
     borderRadius: 9999,
-    backgroundColor: '#007bff',
+    backgroundColor: "#007bff",
   },
   profileName: {
     marginTop: 20,
     fontSize: 19,
-    fontWeight: '600',
-    color: '#414d63',
-    textAlign: 'center',
+    fontWeight: "600",
+    color: "#414d63",
+    textAlign: "center",
   },
   profileAddress: {
     marginTop: 5,
     fontSize: 16,
-    color: '#989898',
-    textAlign: 'center',
+    color: "#989898",
+    textAlign: "center",
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
     height: 50,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: "#f2f2f2",
     borderRadius: 8,
     marginBottom: 12,
     paddingLeft: 12,
@@ -230,14 +220,14 @@ const styles = StyleSheet.create({
     height: 32,
     borderRadius: 9999,
     marginRight: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   rowLabel: {
     fontSize: 17,
-    fontWeight: '400',
-    color: '#0c0c0c',
+    fontWeight: "400",
+    color: "#0c0c0c",
   },
   rowSpacer: {
     flexGrow: 1,

@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import getUserInfo from '../../../../services/api/userManagment/getUserInfo';
+import { useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import getUserInfo from "../../../../services/api/userManagment/getUserInfo";
 
 export default function ProfileData({
   isLoading,
@@ -16,9 +16,8 @@ export default function ProfileData({
   }, []);
 
   const fetchProfileData = async () => {
-    const user_id = await AsyncStorage.getItem('whatsthat_user_id');
+    const user_id = await AsyncStorage.getItem("whatsthat_user_id");
     const response = await getUserInfo(user_id);
-    console.log(response);
     if (user_id && response) {
       setUserId(user_id);
       setUserDetails({

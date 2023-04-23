@@ -1,113 +1,305 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Button, Textarea, TextInput } from 'react-native';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Button,
+} from "react-native";
+import generateColorCode from "./generateColorCode";
+import formatTimestamp from "./ConvertTime";
+import { Modal } from "react-native-web";
+import { Ionicons } from "@expo/vector-icons";
 
-function generateColorCode(name) {
-  const hash = name.split('').reduce((acc, char) => {
-    return char.charCodeAt(0) + ((acc << 5) - acc);
-  }, 0);
+export default function Message({
+  message,
+  chat_id,
+  user_id,
+  updateMessage,
+  deleteMessage,
+  lastItem,
+}) {
+  const [prevAuthor, setPrevAuthor] = useState(null);
+  const isLastItem = { lastItem };
+  const [showOptions, setShowOptions] = useState(false);
+  const [isedditing, setIsEditing] = useState(false);
 
-  let color = '#';
-  for (let i = 0; i < 3; i++) {
-    const value = (hash >> (i * 8)) & 0xff;
-    color += ('00' + value.toString(16)).substr(-2);
-  }
-  return color;
-}
-
-export default function Message({ message, chat_id, user_id, updateMessage, deleteMessage }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedMessage, setEditedMessage] = useState({
-    message: message.message,
-  });
-
-  function formatTimestamp(timestamp) {
-    const date = new Date(timestamp);
-    const timeOptions = { hour: 'numeric', minute: 'numeric' };
-    return date.toLocaleTimeString([], timeOptions);
-  }
-  const messageBackgroundColor =
-    message.author.user_id === parseInt(user_id)
-      ? '#b7bab6'
-      : generateColorCode(message.author.first_name + message.author.last_name) + '4D';
-  const messageStyle =
-    message.author.user_id === parseInt(user_id) ? styles.senderMessage : styles.receiverMessage;
-
-  const timestampStyle =
-    message.author.user_id === parseInt(user_id)
-      ? styles.senderTimestamp
-      : styles.receiverTimestamp;
-
-  function handleEdit() {
+  const handleEdit = () => {
     setIsEditing(true);
-  }
+    setShowOptions(false);
+  };
 
-  function handleSubmit() {
-    updateMessage(editedMessage, chat_id, message.message_id);
-    setIsEditing(false);
-  }
+  const handlePress = () => {
+    setShowOptions(!showOptions);
+  };
+  useEffect(() => {
+    if (prevAuthor && prevAuthor.id === message.author.id) {
+      setPrevAuthor(message.author);
+    } else {
+      setPrevAuthor(null);
+    }
+  }, [message, prevAuthor]);
+
+  const senderBackgroundColor = "#1982FC";
+  const receiverBackgroundColor =
+    generateColorCode(message.author.first_name + message.author.last_name) +
+    "4D";
 
   function handleDelete() {
     deleteMessage(chat_id, message.message_id);
-    setIsEditing(false);
   }
 
-  if (isEditing) {
+  ///////
+  const EditModal = () => {
+    const [editedMessage, setEditedMessage] = useState({
+      message: message.message,
+    });
+    const handleUpdate = () => {
+      updateMessage(editedMessage, chat_id, message.message_id);
+      setIsEditing(false);
+      setShowOptions(false);
+    };
+
     return (
-      <View style={[styles.container, messageStyle, { backgroundColor: messageBackgroundColor }]}>
+      <View style={styles.modalContainer}>
+        <TouchableOpacity
+          onPress={() => setIsEditing((prevState) => !prevState)}
+        >
+          <Ionicons name="close" size={24} color="black" />
+        </TouchableOpacity>
         <TextInput
+          style={styles.input}
+          placeholder={editedMessage.message}
           value={editedMessage.message}
-          //onChangeText={setEditedMessage}
-          onChangeText={(text) => setEditedMessage({ ...editedMessage, message: text })}
-          onSubmitEditing={handleSubmit}
-          autoFocus={true}
+          onChangeText={(text) => setEditedMessage({ message: text })}
         />
-        <Button title="Submit" onPress={handleSubmit} />
-        <Button title="Delete" onPress={handleDelete} />
+        <Button title="edit message" onPress={handleUpdate} />
       </View>
+    );
+  };
+  ///////
+  if (message.author.user_id === parseInt(user_id)) {
+    if (isLastItem.lastItem) {
+      return (
+        <>
+          <TouchableOpacity onPress={handlePress}>
+            <View
+              style={[
+                styles.container,
+                styles.senderMessage,
+                { backgroundColor: senderBackgroundColor },
+              ]}
+            >
+              <Text key={message.timestamp} style={styles.message}>
+                {message.message}{" "}
+              </Text>
+              {showOptions && (
+                <View style={styles.optionsContainer}>
+                  <TouchableOpacity onPress={() => handleEdit()}>
+                    <Text style={styles.option}>Edit</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleDelete()}>
+                    <Text style={styles.option}>Delete</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+            <Text style={styles.timeSender}>
+              {formatTimestamp(message.timestamp)}
+            </Text>
+          </TouchableOpacity>
+          <Modal
+            transparent={true}
+            animationIn="fadeIn"
+            animationOut="fadeOut"
+            visible={isedditing}
+          >
+            <View style={styles.overlay}>
+              <EditModal />
+            </View>
+          </Modal>
+        </>
+      );
+    }
+    return (
+      <>
+        <TouchableOpacity onPress={handlePress}>
+          <View
+            style={[
+              styles.container,
+              styles.senderMessage,
+              { backgroundColor: senderBackgroundColor },
+            ]}
+          >
+            <Text key={message.timestamp} style={styles.message}>
+              {message.message}{" "}
+            </Text>
+            {showOptions && (
+              <View style={styles.optionsContainer}>
+                <TouchableOpacity onPress={() => handleEdit()}>
+                  <Text style={styles.option}>Edit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleDelete()}>
+                  <Text style={styles.option}>Delete</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        </TouchableOpacity>
+        <Modal
+          transparent={true}
+          animationIn="fadeIn"
+          animationOut="fadeOut"
+          visible={isedditing}
+        >
+          <View style={styles.overlay}>
+            <EditModal />
+          </View>
+        </Modal>
+      </>
     );
   }
 
-  return (
-    <View style={[styles.container, messageStyle, { backgroundColor: messageBackgroundColor }]}>
-      <Text key={message.timestamp} style={[styles.message]}>
-        {message.message}{' '}
-        <Text style={[styles.timestamp, timestampStyle]}>
-          {formatTimestamp(message.timestamp)} {message.author.first_name.charAt(0)}{' '}
-          {message.author.last_name.charAt(0)}
-        </Text>
-      </Text>
-      {message.author.user_id === parseInt(user_id) && <Button title="Edit" onPress={handleEdit} />}
-    </View>
-  );
+  if (isLastItem.lastItem) {
+    return (
+      <>
+        <View style={{ flexDirection: "row" }}>
+          <View
+            style={[
+              styles.container,
+              styles.receiverMessageLastItem,
+              { backgroundColor: receiverBackgroundColor },
+            ]}
+          >
+            <Text key={message.timestamp} style={styles.message}>
+              {message.message}{" "}
+            </Text>
+          </View>
+        </View>
+        <Text style={styles.time}>{formatTimestamp(message.timestamp)}</Text>
+      </>
+    );
+  } else {
+    return (
+      <View style={{ flexDirection: "row" }}>
+        <View
+          style={[
+            styles.container,
+            styles.receiverMessage,
+            { backgroundColor: receiverBackgroundColor },
+          ]}
+        >
+          <>
+            <Text key={message.timestamp} style={styles.message}>
+              {message.message}{" "}
+            </Text>
+          </>
+        </View>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginBottom: 8,
+    alignSelf: "flex-start",
+    maxWidth: "75%",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 24,
+    backgroundColor: "#f2f2f2",
+
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 1.41,
+    elevation: 2,
+    marginBottom: 1,
+    marginLeft: 10,
   },
+
   senderMessage: {
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
+    borderBottomRightRadius: 0,
   },
   receiverMessage: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
+  },
+  receiverMessageLastItem: {
+    alignSelf: "flex-start",
+    borderBottomLeftRadius: 0,
   },
   message: {
-    fontSize: 16,
+    fontFamily: "System",
+    fontSize: 15,
     lineHeight: 24,
+    color: "white",
   },
-  senderTimestamp: {
-    fontSize: 12,
-    lineHeight: 16,
-    color: '#666',
-    alignSelf: 'flex-end',
+  timestamp: {
+    fontSize: 7,
+  },
+  time: {
+    fontSize: 10,
+    marginLeft: 27,
+    marginTop: 10,
+    opacity: 0.5,
+  },
+  timeSender: {
+    alignSelf: "flex-end",
+    fontSize: 10,
+    marginLeft: 27,
+    marginTop: 3,
+    opacity: 0.5,
   },
   receiverTimestamp: {
-    fontSize: 12,
+    fontSize: 3,
     lineHeight: 16,
-    color: '#666',
-    alignSelf: 'flex-start',
+    color: "#666",
+    alignSelf: "flex-start",
   },
+  circle: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+    marginLeft: 0,
+    marginTop: 0,
+  },
+  initials: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  optionsContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    marginTop: 5,
+  },
+  option: {
+    color: "red",
+    marginHorizontal: 10,
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    marginHorizontal: 20,
+    marginVertical: 80,
+  },
+  input: {
+    height: 40,
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "gray",
+    marginBottom: 20,
+    paddingHorizontal: 10,
+  },
+  overlay: { height: "100%", backgroundColor: "rgba(0, 0, 0, 0.5)" },
 });

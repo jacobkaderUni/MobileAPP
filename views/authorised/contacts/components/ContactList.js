@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, SectionList } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
-import Contact from './Contact';
-import getContacts from '../../../../services/api/contactManagment/getContacts';
-import getBlockedContacts from '../../../../services/api/contactManagment/getBlockedContacts';
-import deleteContact from '../../../../services/api/contactManagment/deleteContact';
-import blockContact from '../../../../services/api/contactManagment/blockContact';
+import React, { useState, useEffect } from "react";
+import { StyleSheet, View, Text, SectionList } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
+import Contact from "./Contact";
+import getContacts from "../../../../services/api/contactManagment/getContacts";
+import getBlockedContacts from "../../../../services/api/contactManagment/getBlockedContacts";
+import deleteContact from "../../../../services/api/contactManagment/deleteContact";
+import blockContact from "../../../../services/api/contactManagment/blockContact";
 
-import unblockContact from '../../../../services/api/contactManagment/unblockContact';
-import Loading from '../../../Loading';
+import unblockContact from "../../../../services/api/contactManagment/unblockContact";
+import Loading from "../../../Loading";
 export default function ContactsList({ contactType }) {
   const isFocused = useIsFocused();
   const [Contacts, setContacts] = useState([]);
@@ -21,10 +21,10 @@ export default function ContactsList({ contactType }) {
 
   const fetchContacts = async () => {
     try {
-      if (contactType === 'blocked') {
+      if (contactType === "blocked") {
         const resContacts = await getBlockedContacts();
         setContacts(resContacts.data);
-      } else if (contactType === 'contacts') {
+      } else if (contactType === "contacts") {
         const resContacts = await getContacts();
         setContacts(resContacts.data);
       }
@@ -74,7 +74,7 @@ export default function ContactsList({ contactType }) {
   const sections = Object.values(groupedContacts);
 
   const renderItem = ({ item }) => {
-    if (contactType === 'blocked') {
+    if (contactType === "blocked") {
       return (
         <Contact
           contact={item}
@@ -82,12 +82,13 @@ export default function ContactsList({ contactType }) {
           onUnBlock={() => handleUnBlock(item.user_id)}
         />
       );
-    } else if (contactType === 'contacts') {
+    } else if (contactType === "contacts") {
       return (
         <Contact
           contact={item}
           onDelete={() => handleDelete(item.user_id)}
           onBlock={() => handleBlock(item.user_id)}
+          type={true}
         />
       );
     }
@@ -117,24 +118,24 @@ export default function ContactsList({ contactType }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    paddingTop: 40,
+    backgroundColor: "#fff",
+    paddingHorizontal: 1,
+    paddingTop: 5,
   },
   searchBox: {
     borderRadius: 25,
-    borderColor: '#333',
-    backgroundColor: '#fff',
+    borderColor: "#333",
+    backgroundColor: "#fff",
     paddingVertical: 8,
     paddingHorizontal: 16,
     fontSize: 16,
     marginBottom: 16,
   },
   itemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 16,
-    borderBottomColor: '#ccc',
+    borderBottomColor: "#ccc",
     borderBottomWidth: 1,
   },
   avatar: {
@@ -145,21 +146,21 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   button: {
-    backgroundColor: '#333',
+    backgroundColor: "#333",
     borderRadius: 25,
     paddingVertical: 8,
     paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginLeft: 8,
   },
 });

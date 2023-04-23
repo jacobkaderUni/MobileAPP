@@ -8,7 +8,7 @@ import {
   Button,
 } from "react-native";
 import { Modal, TouchableOpacity } from "react-native-web";
-import { Ionicons, AntDesign } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import getChats from "../../../services/api/chatManagment/getChats";
 import Chat from "./components/Chat";
 import startChat from "../../../services/api/chatManagment/startChat";
@@ -16,34 +16,17 @@ import getChatInfo from "../../../services/api/chatManagment/getChatInfo";
 import { useNavigation } from "@react-navigation/native";
 import { useIsFocused } from "@react-navigation/native";
 import Loading from "../../Loading";
-import { green } from "../../unauthorised/components/Constants";
 import FeatherIcon from "react-native-vector-icons/Feather";
-import Icon from "react-native-feather1s";
+import DraftSender from "./components/checkTimestamps";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import sendMessage from "../../../services/api/chatManagment/sendMessage";
 export default function Chats() {
   const isFocused = useIsFocused();
   const [isLoading, setIsLoading] = useState(true);
   const [chats, setChats] = useState([]);
   const [createChatModel, setCreateChatModel] = useState(false);
+  const [chatIds, setChatIds] = useState([]);
   const navigation = useNavigation();
-
-  // React.useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerTitle: 'Chats',
-  //     headerStyle: {
-  //       // borderBottomLeftRadius: 20,
-  //       // borderBottomRightRadius: 20,
-  //     },
-
-  //     headerRight: () => (
-  //       <>
-  //         <Ionicons name="options" style={styles.dummy} size={35} color="black" />
-  //         <TouchableOpacity style={styles.addButton} onPress={() => setCreateChatModel(true)}>
-  //           <AntDesign name="pluscircle" size={35} color="black" />
-  //         </TouchableOpacity>
-  //       </>
-  //     ),
-  //   });
-  // }, [navigation]);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -74,19 +57,36 @@ export default function Chats() {
   }, [navigation]);
 
   useEffect(() => {
-    if (isFocused) {
+    if (isFocused || isLoading) {
       handleGetChats();
     }
-  }, [isFocused]);
+    const intervalId = setInterval(() => {
+      handleGetChats();
+      console.log("checking drafts");
+    }, 60000);
+
+    return () => clearInterval(intervalId);
+  }, [isFocused, isLoading]);
 
   const handleGetChats = async () => {
-    const response = await getChats();
-    console.log(response);
-    if (response.status === 200) {
-      setChats(response.data);
-      setIsLoading(false);
-      if (createChatModel) {
-        setCreateChatModel(false);
+    try {
+      const response = await getChats();
+      if (response.status === 200) {
+        setChats(response.data);
+        const ids = response.data?.map((chat) => chat.chat_id);
+        sendDueDrafts(ids);
+        setIsLoading(false);
+        if (createChatModel) {
+          setCreateChatModel(false);
+        }
+      }
+    } catch (error) {
+      if (error.code === 999) {
+        setChats([]);
+        sendDueDrafts([]);
+        setIsLoading(false);
+      } else {
+        console.log(error);
       }
     }
   };
@@ -98,6 +98,38 @@ export default function Chats() {
       navigation.navigate("OpenedChat", { chat: response, id: newid });
     }
   };
+  //////////
+
+  const sendDueDrafts = async (ids) => {
+    for (const chatId of ids) {
+      const draftsJson = await AsyncStorage.getItem(chatId);
+      const drafts = JSON.parse(draftsJson) || [];
+      drafts.forEach(async (draft) => {
+        const timestamp = new Date(draft.timestamp);
+        const now = new Date();
+
+        if (draft.timestamp !== null) {
+          if (now >= timestamp) {
+            console.log("Draft sent:" + draft.message);
+            sendMessage({ message: draft.message }, chatId);
+
+            const newDrafts = drafts.filter(
+              (d) => d.timestamp !== draft.timestamp
+            );
+            // console.log(newDrafts);
+            await AsyncStorage.setItem(chatId, JSON.stringify(newDrafts));
+          }
+        }
+      });
+    }
+  };
+
+  // const sendDraft = async (index) => {
+  //   handleMessage({ message: drafts[index].message }, id);
+  //   const updatedDrafts = drafts.filter((_, i) => i !== index);
+  //   setDrafts(updatedDrafts);
+  //   await AsyncStorage.setItem(id, JSON.stringify(updatedDrafts));
+  // };
 
   //////////
   const CreateChatScreen = () => {
@@ -119,8 +151,13 @@ export default function Chats() {
     };
 
     return (
-      <View style={styles.container}>
-        <TouchableOpacity onPress={() => setCreateChatModel(false)}>
+      <View style={styles.modalContainer}>
+        <TouchableOpacity
+          onPress={() => {
+            setCreateChatModel(false);
+            setIsLoading(true);
+          }}
+        >
           <Ionicons name="close" size={24} color="black" />
         </TouchableOpacity>
         <TextInput
@@ -133,9 +170,9 @@ export default function Chats() {
       </View>
     );
   };
-  const renderItem = ({ item }) => (
-    <Chat chat={item} getChat={() => handleOpenChat(item.chat_id)} />
-  );
+  const renderItem = ({ item }) => {
+    return <Chat chat={item} getChat={() => handleOpenChat(item.chat_id)} />;
+  };
 
   return (
     <View style={styles.container}>
@@ -150,14 +187,20 @@ export default function Chats() {
             renderItem={renderItem}
             keyExtractor={(item) => item.chat_id.toString()}
           />
-          <Modal
-            visible={createChatModel}
-            onPress={() => handleOpenChat(item.chat_id)}
-          >
-            <CreateChatScreen />
-          </Modal>
         </>
       )}
+      <Modal
+        transparent={true}
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+        visible={createChatModel}
+        onPress={() => handleOpenChat(item.chat_id)}
+      >
+        <DraftSender chatIds={chatIds} />
+        <View style={styles.overlay}>
+          <CreateChatScreen />
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -165,9 +208,16 @@ export default function Chats() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
     paddingHorizontal: 0,
     paddingTop: 0,
+  },
+  overlay: { height: "100%", backgroundColor: "rgba(0, 0, 0, 0.5)" },
+  modalContainer: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 20,
+    marginHorizontal: 20,
+    marginVertical: 80,
   },
   input: {
     height: 40,

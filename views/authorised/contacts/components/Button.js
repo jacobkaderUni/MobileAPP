@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import React, { useState } from "react";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 export default function FilterButton({ options, defaultOption, onSelect }) {
   const [selectedOption, setSelectedOption] = useState(defaultOption);
@@ -16,14 +16,16 @@ export default function FilterButton({ options, defaultOption, onSelect }) {
           key={option.value}
           style={[
             styles.optionButton,
-            selectedOption.value === option.value && styles.selectedOptionButton,
+            selectedOption.value === option.value &&
+              styles.selectedOptionButton,
           ]}
           onPress={() => handleOptionSelect(option)}
         >
           <Text
             style={[
               styles.optionText,
-              selectedOption.value === option.value && styles.selectedOptionText,
+              selectedOption.value === option.value &&
+                styles.selectedOptionText,
             ]}
           >
             {option.label}
@@ -36,28 +38,27 @@ export default function FilterButton({ options, defaultOption, onSelect }) {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-
-    paddingVertical: 4, // modify paddingVertical to make the button smaller
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 4,
     paddingHorizontal: 16,
   },
   optionButton: {
     flex: 1,
-    alignItems: 'center',
-    paddingVertical: 4, // modify paddingVertical to make the button smaller
+    alignItems: "center",
+    paddingVertical: 4,
   },
   selectedOptionButton: {
-    backgroundColor: '#333',
-    borderRadius: 20, // modify borderRadius to make the button simpler
+    backgroundColor: "#333",
+    borderRadius: 20,
   },
   optionText: {
-    color: '#333',
+    color: "#333",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   selectedOptionText: {
-    color: '#fff',
+    color: "#fff",
   },
 });
