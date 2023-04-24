@@ -18,6 +18,7 @@ import Loading from "../../Loading";
 import DisplayImage from "./cameraHandling.s/Display";
 import { useNavigation } from "@react-navigation/native";
 import { useIsFocused } from "@react-navigation/native";
+import { useToast } from "react-native-toast-notifications";
 
 export default function Settings2() {
   const [userId, setUserId] = useState();
@@ -32,11 +33,18 @@ export default function Settings2() {
   const [showModal, setShowModal] = useState(false);
   const [_, setUser] = useAuth();
   const navigation = useNavigation();
+  const toast = useToast();
 
   const onSubmitLogout = async () => {
     try {
       const response = await logoutUser();
       if (response.status === 200) {
+        toast.show("logged out", {
+          type: "success",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
         setUser();
         AsyncStorage.removeItem("whatsthat_user_id");
         AsyncStorage.removeItem("whatsthat_session_token");
@@ -44,7 +52,21 @@ export default function Settings2() {
         console.log("didnt logout, try again");
       }
     } catch (error) {
-      console.log(error);
+      if (error.response.status === 400) {
+        toast.show("Unauthorised", {
+          type: "warning",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Server Error", {
+          type: "danger",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
+      }
     }
   };
 

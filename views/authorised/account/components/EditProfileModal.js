@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import updateUser from "../../../../services/api/userManagment/updateUser";
 import EditProfilePage from "./EditProfilePage";
+import { useToast } from "react-native-toast-notifications";
 export default function EditProfileModal({
   userDetails,
   close,
@@ -12,7 +13,7 @@ export default function EditProfileModal({
     email: false,
     password: false,
   });
-
+  const toast = useToast();
   const [form, setForm] = useState({
     first_name: "",
     last_name: "",
@@ -49,13 +50,53 @@ export default function EditProfileModal({
       const response = await updateUser(form, userId);
 
       if (response.status === 200) {
-        console.log(response);
+        toast.show("Details updated", {
+          type: "success",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
         logout();
       } else {
         console.log("didnt update user info");
       }
     } catch (error) {
-      console.log(error);
+      if (error.response.status === 400) {
+        toast.show("Bad request, check inputs", {
+          type: "warning",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 401) {
+        toast.show("Unauthorised", {
+          type: "danger",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 403) {
+        toast.show("Forbidden", {
+          type: "danger",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 404) {
+        toast.show("Not Found", {
+          type: "danger",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Server Error", {
+          type: "danger",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
+      }
     }
   };
 

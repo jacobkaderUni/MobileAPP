@@ -3,11 +3,13 @@ import { Image, Text, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BASE_URL } from "@env";
 import { useIsFocused } from "@react-navigation/native";
+import { useToast } from "react-native-toast-notifications";
 
 const DisplayImage = ({ user_id, type }) => {
   const [photo, setPhoto] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const isFocused = useIsFocused();
+  const toast = useToast();
   // useEffect(() => {
   //   getProfileImage();
   // }, []);
@@ -39,7 +41,35 @@ const DisplayImage = ({ user_id, type }) => {
         setIsLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        if (err.response.status === 400) {
+          toast.show("Bad request, user might already exist", {
+            type: "warning",
+            placement: "top",
+            duration: 3000,
+            animationType: "slide-in",
+          });
+        } else if (err.response.status === 401) {
+          toast.show("Unauthorised", {
+            type: "danger",
+            placement: "top",
+            duration: 3000,
+            animationType: "slide-in",
+          });
+        } else if (err.response.status === 404) {
+          toast.show("Not Found", {
+            type: "danger",
+            placement: "top",
+            duration: 3000,
+            animationType: "slide-in",
+          });
+        } else if (err.response.status === 500) {
+          toast.show("Server Error", {
+            type: "danger",
+            placement: "top",
+            duration: 3000,
+            animationType: "slide-in",
+          });
+        }
       });
   };
 

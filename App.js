@@ -3,14 +3,16 @@ import { NavigationContainer } from "@react-navigation/native";
 import Navigator from "./navigator/Navigator";
 import Authprovider from "./navigator/AuthContext";
 import React, { Component } from "react";
-
+import { ToastProvider } from "react-native-toast-notifications";
 export default function App() {
   return (
-    <NavigationContainer>
-      <Authprovider>
-        <Navigator />
-      </Authprovider>
-    </NavigationContainer>
+    <ToastProvider>
+      <NavigationContainer>
+        <Authprovider>
+          <Navigator />
+        </Authprovider>
+      </NavigationContainer>
+    </ToastProvider>
   );
 }
 
