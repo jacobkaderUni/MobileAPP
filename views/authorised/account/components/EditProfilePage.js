@@ -1,8 +1,8 @@
-import React from 'react';
-import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
-import ValidateEmail from '../../../../functions/ValidateEmail';
-import ValidatePass from '../../../../functions/ValidatePass';
-import FormField from './FormField';
+import React from "react";
+import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
+import ValidateEmail from "../../../../functions/ValidateEmail";
+import ValidatePass from "../../../../functions/ValidatePass";
+import FormField from "./FormField";
 
 export default function EditProfilePage({
   form,
@@ -34,7 +34,7 @@ export default function EditProfilePage({
             : setValidationError({ ...validationError, email: false })
         }
         onChangeText={(text) => setForm({ ...form, email: text })}
-        error={validationError.email && 'Email not valid'}
+        error={validationError.email && "Email not valid"}
       />
       <FormField
         label="Password:"
@@ -46,13 +46,19 @@ export default function EditProfilePage({
             ? setValidationError({ ...validationError, password: true })
             : setValidationError({ ...validationError, password: false })
         }
-        error={validationError.password && 'Password is invalid, try again'}
+        error={validationError.password && "Password is invalid, try again"}
       />
       {formError && <Text style={styles.errorText}>{formError}</Text>}
-      <TouchableOpacity style={styles.button} onPress={() => onSubmitUpdateUser()}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => onSubmitUpdateUser()}
+      >
         <Text style={styles.buttonText}>Save Changes</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => handleCloseModal()}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => handleCloseModal()}
+      >
         <Text style={styles.buttonText}>Cancel</Text>
       </TouchableOpacity>
     </View>
@@ -63,21 +69,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   button: {
-    backgroundColor: '#007bff',
+    backgroundColor: "#007bff",
     marginTop: 10,
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   errorText: {
-    color: 'red',
+    color: "red",
   },
 });

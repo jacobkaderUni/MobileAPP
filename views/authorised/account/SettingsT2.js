@@ -98,6 +98,7 @@ export default function Settings2() {
             <TouchableOpacity
               onPress={() => {
                 setShowModal(true);
+                console.log(userDetails);
               }}
             >
               <View style={styles.row}>
@@ -138,6 +139,7 @@ export default function Settings2() {
             </TouchableOpacity>
             <Modal visible={showModal}>
               <EditProfileModal
+                userDetails={userDetails}
                 close={closeModal}
                 userId={userId}
                 logout={onSubmitLogout}

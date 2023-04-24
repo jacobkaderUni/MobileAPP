@@ -10,7 +10,12 @@ import {
   ScrollView,
 } from "react-native";
 import { FlatList } from "react-native-web";
-import { Ionicons, SimpleLineIcons, FontAwesome } from "@expo/vector-icons";
+import {
+  Ionicons,
+  SimpleLineIcons,
+  FontAwesome,
+  AntDesign,
+} from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { groupBy, max, set } from "lodash";
 import sendMessage from "../../../services/api/chatManagment/sendMessage";
@@ -27,6 +32,7 @@ import Circle from "./components/Circle";
 import getInitials from "./components/getInitials";
 import Drafts from "./components/Drafts";
 import moment from "moment";
+import AddUsers from "./components/addUser";
 // import SetDateTimeModal from "./components/DraftSetTime";
 import ModaleDT from "./components/DraftSetTime";
 export default function OpenedChat({ route }) {
@@ -45,19 +51,62 @@ export default function OpenedChat({ route }) {
   const [currentDraft, setCurrentDraft] = useState("");
   const [showDateTime, setShowDateTime] = useState(false);
   const [currentUser, setCurrentUser] = useState("");
+  const [showAddUser, setShowAddUser] = useState(false);
 
+  // React.useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerTitle: chat.data.name,
+  //     headerTitleAlign: "center",
+  //     headerStyle: {},
+  //     headerRight: () => (
+  //       <View style={{ flexDirection: "row" }}>
+  //         <TouchableOpacity>
+  //           <AntDesign
+  //             name="adduser"
+  //             style={{ marginRight: 18, marginBottom: 0 }}
+  //             size={30}
+  //             color="black"
+  //           />
+  //         </TouchableOpacity>
+  //         <TouchableOpacity
+  //           style={{ marginRight: 15 }}
+  //           onPress={() => setShowDrafts(true)}
+  //         >
+  //           <FontAwesome name="edit" size={30} color="black" />
+  //         </TouchableOpacity>
+  //         <TouchableOpacity
+  //           style={{ marginRight: 5 }}
+  //           onPress={() => openModal()}
+  //         >
+  //           <SimpleLineIcons name="options-vertical" size={24} color="black" />
+  //         </TouchableOpacity>
+  //       </View>
+  //     ),
+  //   });
+  // }, [navigation]);
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: chat.data.name,
+      headerTitle:
+        chat.data.name.length > 15
+          ? chat.data.name.slice(0, 15) + "..."
+          : chat.data.name, //chat.data.name.slice(0, 15) + "...",
       headerTitleAlign: "center",
       headerStyle: {},
       headerRight: () => (
         <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity onPress={() => setShowAddUser(true)}>
+            <AntDesign
+              name="adduser"
+              style={{ marginRight: 18, marginBottom: 0 }}
+              size={30}
+              color="black"
+            />
+          </TouchableOpacity>
           <TouchableOpacity
             style={{ marginRight: 15 }}
             onPress={() => setShowDrafts(true)}
           >
-            <FontAwesome name="edit" size={24} color="black" />
+            <FontAwesome name="edit" size={30} color="black" />
           </TouchableOpacity>
           <TouchableOpacity
             style={{ marginRight: 5 }}
@@ -281,6 +330,9 @@ export default function OpenedChat({ route }) {
               />
               {/* <SetDateTimeModal /> */}
             </View>
+          </Modal>
+          <Modal visible={showAddUser}>
+            <AddUsers />
           </Modal>
           <ScrollView>
             <View style={{ height: max }}>
