@@ -75,7 +75,7 @@ export default function Camera2() {
         toast.show("Picture uploaded successfully", {
           type: "success",
           placement: "top",
-          duration: 3000,
+          duration: 2000,
           animationType: "slide-in",
         });
         setPhoto(null);
@@ -85,21 +85,21 @@ export default function Camera2() {
         toast.show("Unauthorised", {
           type: "warning",
           placement: "top",
-          duration: 3000,
+          duration: 2000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 404) {
         toast.show("Not found", {
           type: "danger",
           placement: "top",
-          duration: 3000,
+          duration: 2000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 500) {
         toast.show("Server Error", {
           type: "danger",
           placement: "top",
-          duration: 3000,
+          duration: 2000,
           animationType: "slide-in",
         });
       }
