@@ -7,7 +7,7 @@ import Field from "./components/Fielf";
 import registerUser from "../../services/api/userManagment/registerUser";
 import ValidateEmail from "../../functions/ValidateEmail";
 import ValidatePass from "../../functions/ValidatePass";
-
+import { useToast } from "react-native-toast-notifications";
 const Register = (props) => {
   const [form, setForm] = useState({
     first_name: "",
@@ -18,6 +18,7 @@ const Register = (props) => {
   const [emailError, setEmailError] = useState(false);
   const [passError, setPassError] = useState(false);
   const [isValid, setIsValid] = useState(false);
+  const toast = useToast();
 
   const handleValidation = () => {
     const isEmailValid = ValidateEmail(form.email);
@@ -30,20 +31,39 @@ const Register = (props) => {
     handleValidation();
   }, [form.email, form.password, emailError, passError]);
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     try {
       if (ValidateEmail(form.email) && ValidatePass(form.password)) {
         console.log(form);
-        const response = registerUser(form);
+        const response = await registerUser(form);
         console.log(response);
+        console.log(response.status);
         if (response.status === 201) {
+          toast.show("Account created successfully", {
+            type: "success",
+            placement: "top",
+            duration: 3000,
+            animationType: "slide-in",
+          });
           navigation.navigate("logintest");
-        } else {
-          console.log("Check details please");
         }
       }
     } catch (error) {
-      console.log("Error: ", error);
+      if (error.response.status === 400) {
+        toast.show("Bad request, user might already exist", {
+          type: "warning",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Server Error", {
+          type: "danger",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
+      }
     }
   };
   return (

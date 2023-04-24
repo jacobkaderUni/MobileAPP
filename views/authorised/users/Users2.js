@@ -8,6 +8,7 @@ import { useCallback } from "react";
 import Loading from "../../Loading";
 import ContactItem from "./components/ContactItem";
 import SectionHeader from "./components/SectionHeader";
+import { useToast } from "react-native-toast-notifications";
 
 export default function Users2() {
   const [isLoading, setIsLoading] = useState(true);
@@ -17,7 +18,7 @@ export default function Users2() {
   const [isFocused, setIsFocused] = useState(false);
   const handleFocus = () => setIsFocused(true);
   const handleBlur = () => setIsFocused(false);
-
+  const toast = useToast();
   // Reset state when component is mounted
   useEffect(() => {
     setQuery("");
@@ -60,10 +61,32 @@ export default function Users2() {
   const fetchContacts = useCallback(async (text) => {
     try {
       const response = await SearchUsers(text);
+      console.log(response);
       setContacts(response.data);
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
+      if (error.response.status === 400) {
+        toast.show("Bad request, user might not exist", {
+          type: "warning",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 401) {
+        toast.show("Unauthorised", {
+          type: "danger",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Server Error", {
+          type: "danger",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      }
     }
   }, []);
 

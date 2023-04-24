@@ -6,6 +6,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import SendImage from "../../../../services/api/userManagment/sendImage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useToast } from "react-native-toast-notifications";
 
 export default function Camera2() {
   const [type, setType] = useState(CameraType.back);
@@ -16,6 +17,7 @@ export default function Camera2() {
   const isFocused = useIsFocused();
   const cameraRef = useRef(null);
   const navigation = useNavigation();
+  const toast = useToast();
   useEffect(() => {
     (async () => {
       const { status } = await requestCameraPermissionsAsync();
@@ -70,10 +72,37 @@ export default function Camera2() {
       let userId = await AsyncStorage.getItem("whatsthat_user_id");
       const response = await SendImage(userId, photo);
       if (response.status === 200) {
+        toast.show("Picture uploaded successfully", {
+          type: "success",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
         setPhoto(null);
       }
     } catch (error) {
-      console.log(error);
+      if (error.response.status === 401) {
+        toast.show("Unauthorised", {
+          type: "warning",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 404) {
+        toast.show("Not found", {
+          type: "danger",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Server Error", {
+          type: "danger",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
+      }
     }
   }
 

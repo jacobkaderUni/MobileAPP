@@ -1,23 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Background from './components/Background';
-import Btn from './components/Btn';
-import { darkGreen } from './components/Constants';
-import Field from './components/Fielf';
-import loginUser from '../../services/api/userManagment/loginUser';
-import ValidateEmail from '../../functions/ValidateEmail';
-import ValidatePass from '../../functions/ValidatePass';
-import { useAuth } from '../../navigator/AuthContext';
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import Background from "./components/Background";
+import Btn from "./components/Btn";
+import { darkGreen } from "./components/Constants";
+import Field from "./components/Fielf";
+import loginUser from "../../services/api/userManagment/loginUser";
+import ValidateEmail from "../../functions/ValidateEmail";
+import ValidatePass from "../../functions/ValidatePass";
+import { useAuth } from "../../navigator/AuthContext";
+import { useToast } from "react-native-toast-notifications";
 
 const Login = (props) => {
   const [form, setForm] = useState({
-    email: 'ashley.williams@mmu.ac.uk',
-    password: 'Wr3xh4m!',
+    email: "ashley.williams@mmu.ac.uk",
+    password: "Wr3xh4m!",
   });
   const [emailError, setEmailError] = useState(true);
   const [passError, setPassError] = useState(true);
   const [isValid, setIsValid] = useState(false);
   const [_, setUser] = useAuth();
+  const toast = useToast();
 
   const handleValidation = () => {
     const isEmailValid = ValidateEmail(form.email);
@@ -30,14 +32,32 @@ const Login = (props) => {
     try {
       if (ValidateEmail(form.email) && ValidatePass(form.password)) {
         const response = await loginUser(form);
-        if (response.data) {
+        if (response.status === 200) {
+          toast.show("Logged in", {
+            type: "success",
+            placement: "top",
+            duration: 2000,
+            animationType: "slide-in",
+          });
           setUser(response);
-        } else {
-          console.log('Invalid email and/or password');
         }
       }
     } catch (error) {
-      console.log('Error: ', error);
+      if (error.response.status === 400) {
+        toast.show("Invalid password or email", {
+          type: "warning",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Server Error", {
+          type: "danger",
+          placement: "top",
+          duration: 3000,
+          animationType: "slide-in",
+        });
+      }
     }
   };
   useEffect(() => {
@@ -45,36 +65,39 @@ const Login = (props) => {
   }, [form.email, form.password, emailError, passError]);
 
   return (
-    <Background style={{ width: '100%' }}>
+    <Background style={{ width: "100%" }}>
       <View
         style={{
-          alignItems: 'center',
-          marginHorizontal: 'auto',
-          height: '100%',
-          flexDirection: 'column',
+          alignItems: "center",
+          marginHorizontal: "auto",
+          height: "100%",
+          flexDirection: "column",
         }}
       >
-        <View id="text" style={{ alignItems: 'center', marginVertical: 0, height: 290 }}>
+        <View
+          id="text"
+          style={{ alignItems: "center", marginVertical: 0, height: 290 }}
+        >
           <Text
             style={{
               paddingTop: 90,
-              color: 'white',
+              color: "white",
               fontSize: 64,
-              fontWeight: 'bold',
+              fontWeight: "bold",
             }}
           >
             Login
           </Text>
         </View>
-        <View id="form" style={{ alignItems: 'center' }}>
+        <View id="form" style={{ alignItems: "center" }}>
           <View
             style={{
-              backgroundColor: 'white',
+              backgroundColor: "white",
               height: 561,
               width: 393,
               borderTopLeftRadius: 130,
               paddingTop: 100,
-              alignItems: 'center',
+              alignItems: "center",
               marginTop: 0,
             }}
           >
@@ -85,7 +108,11 @@ const Login = (props) => {
               value={form.email}
               onChangeText={(text) => setForm({ ...form, email: text })}
             />
-            {emailError && <Text style={styles.errorText}>Wrong email format, try ___@__.com</Text>}
+            {emailError && (
+              <Text style={styles.errorText}>
+                Wrong email format, try ___@__.com
+              </Text>
+            )}
             <Field
               secureTextEntry
               placeholder="**********"
@@ -94,29 +121,35 @@ const Login = (props) => {
               value={form.password}
               onChangeText={(text) => setForm({ ...form, password: text })}
             />
-            {passError && <Text style={styles.errorText}>Password is invalid, try again.</Text>}
+            {passError && (
+              <Text style={styles.errorText}>
+                Password is invalid, try again.
+              </Text>
+            )}
             <View
               style={{
-                display: 'flex',
-                flexDirection: 'row',
-                width: '78%',
+                display: "flex",
+                flexDirection: "row",
+                width: "78%",
                 paddingRight: 0,
-                justifyContent: 'flex-end',
+                justifyContent: "flex-end",
               }}
             >
               <TouchableOpacity>
-                <Text style={{ color: darkGreen, fontWeight: 'bold', fontSize: 12 }}>
+                <Text
+                  style={{ color: darkGreen, fontWeight: "bold", fontSize: 12 }}
+                >
                   Forgot Password?
                 </Text>
               </TouchableOpacity>
             </View>
             <View
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: '78%',
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "78%",
                 paddingRight: 16,
                 paddingStart: 16,
                 marginBottom: 7,
@@ -134,18 +167,30 @@ const Login = (props) => {
 
               <View
                 style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: '78%',
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "78%",
                   paddingRight: 16,
                   marginBottom: 7,
                 }}
               >
-                <Text style={{ color: 'grey', fontSize: 12 }}>Don't have an account? </Text>
-                <TouchableOpacity onPress={() => props.navigation.navigate('register')}>
-                  <Text style={{ color: darkGreen, fontWeight: 'bold', fontSize: 12 }}>Signup</Text>
+                <Text style={{ color: "grey", fontSize: 12 }}>
+                  Don't have an account?{" "}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => props.navigation.navigate("register")}
+                >
+                  <Text
+                    style={{
+                      color: darkGreen,
+                      fontWeight: "bold",
+                      fontSize: 12,
+                    }}
+                  >
+                    Signup
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -158,14 +203,14 @@ const Login = (props) => {
 const styles = StyleSheet.create({
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     paddingHorizontal: 10,
     borderRadius: 5,
     marginBottom: 10,
   },
   errorText: {
-    color: 'grey',
+    color: "grey",
     fontSize: 12,
   },
 });
