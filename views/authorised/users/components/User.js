@@ -3,12 +3,11 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import DisplayImage from "../../account/cameraHandling.s/Display";
 import asyncStorage from "@react-native-async-storage/async-storage";
-export default function User({ contact, addContact }) {
+export default function User({ contact, addContact, type }) {
   const [showAdd, setShowAdd] = useState(true);
   const addContactHandler = () => {
     addContact();
   };
-
   const user = async () => {
     let id = await asyncStorage.getItem("whatsthat_user_id");
     if (parseInt(id) === contact.user_id) {
@@ -20,31 +19,66 @@ export default function User({ contact, addContact }) {
     user();
   }, []);
 
-  return (
-    <View style={styles.container}>
-      <View style={[styles.cardImg, styles.cardAvatar]}>
-        {/* <Text style={styles.cardAvatarText}>{contact.user_id}</Text> */}
-        <DisplayImage user_id={contact.user_id} type={"2"} />
-      </View>
+  if (type) {
+    return (
+      <View style={styles.container}>
+        <View style={[styles.cardImg, styles.cardAvatar]}>
+          <DisplayImage user_id={contact.user_id} type={"2"} />
+        </View>
 
-      <View style={styles.cardBody}>
-        <Text style={styles.cardTitle}>
-          {contact.given_name} {contact.family_name}
-        </Text>
-        <Text style={styles.cardPhone}>
-          {contact.email} id:{contact.user_id}
-        </Text>
+        <View style={styles.cardBody}>
+          <Text style={styles.cardTitle}>
+            {(contact.first_name + " " + contact.last_name).length > 13
+              ? (contact.first_name + " " + contact.last_name).slice(0, 13) +
+                "..."
+              : contact.first_name + " " + contact.last_name}
+          </Text>
+          <Text style={styles.cardPhone}>
+            {contact.email.length > 13
+              ? contact.email.slice(0, 13) + "..."
+              : contact.email}
+          </Text>
+        </View>
+        {showAdd && (
+          <TouchableOpacity
+            onPress={() => addContactHandler()}
+            styles={styles.addBtn}
+          >
+            <AntDesign name="plus" size={34} color="green" />
+          </TouchableOpacity>
+        )}
       </View>
-      {showAdd && (
-        <TouchableOpacity
-          onPress={() => addContactHandler()}
-          styles={styles.addBtn}
-        >
-          <AntDesign name="plus" size={24} color="grey" />
-        </TouchableOpacity>
-      )}
-    </View>
-  );
+    );
+  } else {
+    return (
+      <View style={styles.container}>
+        <View style={[styles.cardImg, styles.cardAvatar]}>
+          <DisplayImage user_id={contact.user_id} type={"2"} />
+        </View>
+
+        <View style={styles.cardBody}>
+          <Text style={styles.cardTitle}>
+            {contact.given_name} {contact.family_name}
+          </Text>
+          <Text style={styles.cardPhone}>
+            <Text style={styles.cardPhone}>
+              {contact.email.length > 15
+                ? contact.email.slice(0, 15) + "..."
+                : contact.email}
+            </Text>
+          </Text>
+        </View>
+        {showAdd && (
+          <TouchableOpacity
+            onPress={() => addContactHandler()}
+            styles={styles.addBtn}
+          >
+            <AntDesign name="plus" size={34} color="grey" />
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
