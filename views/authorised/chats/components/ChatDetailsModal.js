@@ -109,8 +109,8 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
           keyExtractor={(item) => item.user_id}
         />
       )}
-      <Text style={styles.label}>Add User:</Text>
-      <View style={styles.inputContainer}>
+      {/*  <Text style={styles.label}>Add User:</Text>
+    <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
           placeholder="Enter User ID"
@@ -124,17 +124,28 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
         >
           <Text style={styles.addButtonText}>Add</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // container: {
+  //   flex: 1,
+  //   backgroundColor: "#fff",
+  //   padding: 20,
+  //   justifyContent: "center",
+  // },
   container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 20,
-    justifyContent: "center",
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "90%",
+    height: "90%",
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 15,
   },
   closeButton: {
     alignSelf: "flex-end",

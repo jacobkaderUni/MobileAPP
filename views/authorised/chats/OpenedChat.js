@@ -172,6 +172,10 @@ export default function OpenedChat({ route }) {
   const closeModal = () => {
     setChatDetails(false);
   };
+
+  const closeAddUser = () => {
+    setShowAddUser(false);
+  };
   const handleOpenChat = async (newid) => {
     const response = await getChatInfo(newid);
     if (response) {
@@ -295,12 +299,14 @@ export default function OpenedChat({ route }) {
         <Loading />
       ) : (
         <View style={{ flex: 1 }}>
-          <Modal visible={chatDetails}>
-            <ChatDetailsModal
-              item={details}
-              id={id}
-              closeDetails={closeModal}
-            />
+          <Modal visible={chatDetails} transparent>
+            <View style={styles.overlay}>
+              <ChatDetailsModal
+                item={details}
+                id={id}
+                closeDetails={closeModal}
+              />
+            </View>
           </Modal>
           <Modal
             transparent={true}
@@ -331,8 +337,10 @@ export default function OpenedChat({ route }) {
               {/* <SetDateTimeModal /> */}
             </View>
           </Modal>
-          <Modal visible={showAddUser}>
-            <AddUsers />
+          <Modal visible={showAddUser} transparent={true}>
+            <View style={styles.overlay}>
+              <AddUsers chatId={id} close={closeAddUser} />
+            </View>
           </Modal>
           <ScrollView>
             <View style={{ height: max }}>
