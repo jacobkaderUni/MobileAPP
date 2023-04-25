@@ -63,7 +63,7 @@ export default function Chats() {
       handleGetChats();
     }
     const intervalId = setInterval(() => {
-      // handleGetChats();
+      handleGetChats();
       console.log("checking drafts");
     }, 60000);
 
@@ -93,8 +93,20 @@ export default function Chats() {
         setChats([]);
         sendDueDrafts([]);
         setIsLoading(false);
-      } else {
-        console.log(error);
+      } else if (error.response.status === 401) {
+        toast.show("Unauthorised", {
+          type: "warning",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Server Error", {
+          type: "danger",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
       }
     }
   };
@@ -141,6 +153,7 @@ export default function Chats() {
   //////////
 
   const sendDueDrafts = async (ids) => {
+    console.log(ids);
     for (const chatId of ids) {
       const draftsJson = await AsyncStorage.getItem(chatId);
       const drafts = JSON.parse(draftsJson) || [];
@@ -226,12 +239,16 @@ export default function Chats() {
     return (
       <View style={styles.modalContainer}>
         <TouchableOpacity
+          style={{
+            marginRight: 290,
+            marginBottom: 10,
+          }}
           onPress={() => {
             setCreateChatModel(false);
             setIsLoading(true);
           }}
         >
-          <Ionicons name="close" size={24} color="black" />
+          <Ionicons name="close" size={30} color="black" />
         </TouchableOpacity>
         <TextInput
           style={styles.input}
@@ -262,6 +279,7 @@ export default function Chats() {
           />
         </>
       )}
+      {/* <DraftSender chatIds={chatIds} /> */}
       <Modal
         transparent={true}
         animationIn="fadeIn"
@@ -269,7 +287,6 @@ export default function Chats() {
         visible={createChatModel}
         onPress={() => handleOpenChat(item.chat_id)}
       >
-        <DraftSender chatIds={chatIds} />
         <View style={styles.overlay}>
           <CreateChatScreen />
         </View>

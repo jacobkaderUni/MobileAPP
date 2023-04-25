@@ -48,49 +48,21 @@ export default function OpenedChat({ route }) {
   const [message, setmessage] = useState({
     message: "",
   });
-
+  const [chatName, setChatName] = useState(chat.data.name);
   const [currentDraft, setCurrentDraft] = useState("");
   const [showDateTime, setShowDateTime] = useState(false);
   const [currentUser, setCurrentUser] = useState("");
   const [showAddUser, setShowAddUser] = useState(false);
   const toast = useToast();
-  // React.useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerTitle: chat.data.name,
-  //     headerTitleAlign: "center",
-  //     headerStyle: {},
-  //     headerRight: () => (
-  //       <View style={{ flexDirection: "row" }}>
-  //         <TouchableOpacity>
-  //           <AntDesign
-  //             name="adduser"
-  //             style={{ marginRight: 18, marginBottom: 0 }}
-  //             size={30}
-  //             color="black"
-  //           />
-  //         </TouchableOpacity>
-  //         <TouchableOpacity
-  //           style={{ marginRight: 15 }}
-  //           onPress={() => setShowDrafts(true)}
-  //         >
-  //           <FontAwesome name="edit" size={30} color="black" />
-  //         </TouchableOpacity>
-  //         <TouchableOpacity
-  //           style={{ marginRight: 5 }}
-  //           onPress={() => openModal()}
-  //         >
-  //           <SimpleLineIcons name="options-vertical" size={24} color="black" />
-  //         </TouchableOpacity>
-  //       </View>
-  //     ),
-  //   });
-  // }, [navigation]);
+
   React.useLayoutEffect(() => {
     navigation.setOptions({
+      // headerTitle:
+      //   chat.data.name.length > 15
+      //     ? chat.data.name.slice(0, 15) + "..."
+      //     : chat.data.name, //chat.data.name.slice(0, 15) + "...",
       headerTitle:
-        chat.data.name.length > 15
-          ? chat.data.name.slice(0, 15) + "..."
-          : chat.data.name, //chat.data.name.slice(0, 15) + "...",
+        chatName.length > 15 ? chatName.slice(0, 15) + "..." : chatName, //chat.data.name.slice(0, 15) + "...",
       headerTitleAlign: "center",
       headerStyle: {},
       headerRight: () => (
@@ -118,7 +90,7 @@ export default function OpenedChat({ route }) {
         </View>
       ),
     });
-  }, [navigation]);
+  }, [navigation, chatName]);
 
   useEffect(() => {
     if (isLoading) {
@@ -180,12 +152,31 @@ export default function OpenedChat({ route }) {
   };
 
   const handleGetChat = async () => {
-    const user = await AsyncStorage.getItem("whatsthat_user_id");
-    const response = await getChatInfo(id);
-    if (response) {
-      setCurrentUser(user);
-      setMessages(sortMessagesByTimestamp(response.data.messages));
-      setIsLoading(false);
+    try {
+      const user = await AsyncStorage.getItem("whatsthat_user_id");
+      const response = await getChatInfo(id);
+      if (response.status === 200) {
+        setChatName(response.data.name);
+        setCurrentUser(user);
+        setMessages(sortMessagesByTimestamp(response.data.messages));
+        setIsLoading(false);
+      }
+    } catch (error) {
+      if (error.response.status === 401) {
+        toast.show("Unauthorised", {
+          type: "warning",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Server Error", {
+          type: "danger",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+      }
     }
   };
 
@@ -293,6 +284,7 @@ export default function OpenedChat({ route }) {
   };
 
   const closeModal = () => {
+    handleGetChat();
     setChatDetails(false);
   };
 

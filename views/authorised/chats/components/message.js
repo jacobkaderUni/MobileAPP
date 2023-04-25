@@ -83,14 +83,14 @@ export default function Message({
     if (isLastItem.lastItem) {
       return (
         <>
-          <TouchableOpacity onPress={handlePress}>
-            <View
-              style={[
-                styles.container,
-                styles.senderMessage,
-                { backgroundColor: senderBackgroundColor },
-              ]}
-            >
+          <View
+            style={[
+              styles.container,
+              styles.senderMessage,
+              { backgroundColor: senderBackgroundColor },
+            ]}
+          >
+            <TouchableOpacity onPress={handlePress}>
               <Text key={message.timestamp} style={styles.message}>
                 {message.message}{" "}
               </Text>
@@ -104,11 +104,11 @@ export default function Message({
                   </TouchableOpacity>
                 </View>
               )}
-            </View>
-            <Text style={styles.timeSender}>
-              {formatTimestamp(message.timestamp)}
-            </Text>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.timeSender}>
+            {formatTimestamp(message.timestamp)}
+          </Text>
           <Modal
             transparent={true}
             animationIn="fadeIn"
@@ -124,14 +124,14 @@ export default function Message({
     }
     return (
       <>
-        <TouchableOpacity onPress={handlePress}>
-          <View
-            style={[
-              styles.container,
-              styles.senderMessage,
-              { backgroundColor: senderBackgroundColor },
-            ]}
-          >
+        <View
+          style={[
+            styles.container,
+            styles.senderMessage,
+            { backgroundColor: senderBackgroundColor },
+          ]}
+        >
+          <TouchableOpacity onPress={handlePress}>
             <Text key={message.timestamp} style={styles.message}>
               {message.message}{" "}
             </Text>
@@ -145,8 +145,9 @@ export default function Message({
                 </TouchableOpacity>
               </View>
             )}
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
+
         <Modal
           transparent={true}
           animationIn="fadeIn"
