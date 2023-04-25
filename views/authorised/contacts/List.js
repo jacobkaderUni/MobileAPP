@@ -9,12 +9,13 @@ import blockContact from "../../../services/api/contactManagment/blockContact";
 import FilterButton from "./components/Button";
 import Contact from "./components/Contact";
 import Loading from "../../Loading";
-
+import { useToast } from "react-native-toast-notifications";
 export default function List() {
   const isFocused = useIsFocused();
   const [selectedValue, setSelectedValue] = useState("contacts");
   const [Contacts, setContacts] = useState([]);
   const [noContacts, setNoContacts] = useState(false);
+  const toast = useToast();
 
   const fetchData = async (filter) => {
     try {

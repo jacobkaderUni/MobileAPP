@@ -16,13 +16,15 @@ import ContactItem from "../../users/components/ContactItem";
 import SectionHeader from "../../users/components/SectionHeader";
 import getContacts from "../../../../services/api/contactManagment/getContacts";
 import addUserToChat from "../../../../services/api/chatManagment/addUserToChat";
+import { useToast } from "react-native-toast-notifications";
+
 export default function AddUsers({ chatId, close }) {
   const [isLoading, setIsLoading] = useState(true);
   const [contacts, setContacts] = useState([]);
   const [query, setQuery] = useState("");
   const [timerId, setTimerId] = useState(null);
   const [isFocused, setIsFocused] = useState(false);
-
+  const toast = useToast();
   // Reset state when component is mounted
   useEffect(() => {
     setQuery("");
@@ -48,16 +50,67 @@ export default function AddUsers({ chatId, close }) {
       setContacts(response.data);
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
+      if (error.response.status === 401) {
+        toast.show("Unauthorised", {
+          type: "warning",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Server Error", {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+        });
+      }
     }
   }, []);
 
   const handleAddContact = useCallback(
     async (id) => {
-      const response = await addUserToChat(chatId, id);
-      console.log(response);
-      if (response) {
-        fetchContacts("");
+      try {
+        const response = await addUserToChat(chatId, id);
+        if (response.status === 200) {
+          toast.show("Contact Added", {
+            type: "success",
+            placement: "top",
+            duration: 1500,
+            animationType: "slide-in",
+          });
+          fetchContacts("");
+        }
+      } catch (error) {
+        if (error.response.status === 400) {
+          toast.show("User has already been added", {
+            type: "warning",
+            placement: "top",
+            duration: 1500,
+            animationType: "slide-in",
+          });
+        } else if (error.response.status === 401) {
+          toast.show("Unauthorised", {
+            type: "warning",
+            placement: "top",
+            duration: 1500,
+            animationType: "slide-in",
+          });
+        } else if (error.response.status === 404) {
+          toast.show("Contact not found", {
+            type: "warning",
+            placement: "top",
+            duration: 1500,
+            animationType: "slide-in",
+          });
+        } else if (error.response.status === 500) {
+          toast.show("Server Error", {
+            type: "danger",
+            placement: "top",
+            duration: 1500,
+            animationType: "slide-in",
+          });
+        }
       }
     },
     [fetchContacts]
