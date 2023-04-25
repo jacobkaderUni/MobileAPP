@@ -20,7 +20,6 @@ import { useNavigation } from "@react-navigation/native";
 import { groupBy, max, set } from "lodash";
 import sendMessage from "../../../services/api/chatManagment/sendMessage";
 import getChatInfo from "../../../services/api/chatManagment/getChatInfo";
-import addUserToChat from "../../../services/api/chatManagment/addUserToChat";
 import updateMesssage from "../../../services/api/chatManagment/updateMessage";
 import deleteMessage from "../../../services/api/chatManagment/deleteMessage";
 import Loading from "../../Loading";
@@ -35,6 +34,8 @@ import moment from "moment";
 import AddUsers from "./components/addUser";
 // import SetDateTimeModal from "./components/DraftSetTime";
 import ModaleDT from "./components/DraftSetTime";
+import { useToast } from "react-native-toast-notifications";
+
 export default function OpenedChat({ route }) {
   const navigation = useNavigation();
   const { chat, id } = route.params;
@@ -52,7 +53,7 @@ export default function OpenedChat({ route }) {
   const [showDateTime, setShowDateTime] = useState(false);
   const [currentUser, setCurrentUser] = useState("");
   const [showAddUser, setShowAddUser] = useState(false);
-
+  const toast = useToast();
   // React.useLayoutEffect(() => {
   //   navigation.setOptions({
   //     headerTitle: chat.data.name,
@@ -131,11 +132,50 @@ export default function OpenedChat({ route }) {
   };
 
   const handleMessage = async (text, chat_id) => {
-    const response = await sendMessage(text, chat_id);
-    if (response) {
-      console.log(response);
-      handleGetChat();
-      setmessage({ message: "" });
+    try {
+      const response = await sendMessage(text, chat_id);
+      if (response.status === 200) {
+        console.log(response);
+        handleGetChat();
+        setmessage({ message: "" });
+      }
+    } catch (error) {
+      if (error.response.status === 400) {
+        toast.show("Message cant be send", {
+          type: "warning",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 401) {
+        toast.show("Unauthorised", {
+          type: "warning",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 403) {
+        toast.show("Forbidden", {
+          type: "warning",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 404) {
+        toast.show("Not found", {
+          type: "warning",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Server Error", {
+          type: "danger",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+      }
     }
   };
 
@@ -150,18 +190,101 @@ export default function OpenedChat({ route }) {
   };
 
   const handleUpdateMessage = async (data, chatid, messageid) => {
-    const response = await updateMesssage(data, chatid, messageid);
-    if (response) {
-      console.log(response);
-      handleGetChat();
+    try {
+      const response = await updateMesssage(data, chatid, messageid);
+      if (response.status === 200) {
+        toast.show("message edited", {
+          type: "normal",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+        handleGetChat();
+      }
+    } catch (error) {
+      if (error.response.status === 400) {
+        toast.show("Message cant be edited", {
+          type: "warning",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 401) {
+        toast.show("Unauthorised", {
+          type: "warning",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 403) {
+        toast.show("Forbidden", {
+          type: "warning",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 404) {
+        toast.show("Not found", {
+          type: "warning",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Server Error", {
+          type: "danger",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+      }
     }
   };
 
   const handleDeleteMessage = async (chatid, messageid) => {
-    const response = await deleteMessage(chatid, messageid);
-    if (response) {
-      console.log(response);
-      handleGetChat();
+    try {
+      const response = await deleteMessage(chatid, messageid);
+      if (response.status === 200) {
+        if (response.data === "OK") {
+          toast.show("Message deleted", {
+            type: "success",
+            placement: "top",
+            duration: 1500,
+            animationType: "slide-in",
+          });
+        }
+        handleGetChat();
+      }
+    } catch (error) {
+      if (error.response.status === 401) {
+        toast.show("Unauthorised", {
+          type: "warning",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 403) {
+        toast.show("Forbidden", {
+          type: "warning",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 404) {
+        toast.show("not found", {
+          type: "warning",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Server Error", {
+          type: "danger",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+      }
     }
   };
 

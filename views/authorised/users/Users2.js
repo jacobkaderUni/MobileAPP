@@ -109,13 +109,23 @@ export default function Users2() {
       try {
         const response = await addContact(id);
         console.log(response);
-        if (response) {
-          toast.show("Contact Added", {
-            type: "success",
-            placement: "top",
-            duration: 1500,
-            animationType: "slide-in",
-          });
+        if (response.status === 200) {
+          if (response.data === "OK") {
+            toast.show("Contact Added", {
+              type: "success",
+              placement: "top",
+              duration: 1500,
+              animationType: "slide-in",
+            });
+          } else {
+            toast.show("Already a contact", {
+              type: "normal",
+              placement: "top",
+              duration: 1500,
+              animationType: "slide-in",
+            });
+          }
+
           fetchContacts("");
         }
       } catch (error) {
