@@ -20,6 +20,8 @@ import FeatherIcon from "react-native-vector-icons/Feather";
 import DraftSender from "./components/checkTimestamps";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import sendMessage from "../../../services/api/chatManagment/sendMessage";
+import { useToast } from "react-native-toast-notifications";
+
 export default function Chats() {
   const isFocused = useIsFocused();
   const [isLoading, setIsLoading] = useState(true);
@@ -27,7 +29,7 @@ export default function Chats() {
   const [createChatModel, setCreateChatModel] = useState(false);
   const [chatIds, setChatIds] = useState([]);
   const navigation = useNavigation();
-
+  const toast = useToast();
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "Chats",
@@ -61,7 +63,7 @@ export default function Chats() {
       handleGetChats();
     }
     const intervalId = setInterval(() => {
-      handleGetChats();
+      // handleGetChats();
       console.log("checking drafts");
     }, 60000);
 
@@ -82,6 +84,12 @@ export default function Chats() {
       }
     } catch (error) {
       if (error.code === 999) {
+        toast.show("No chats in the system", {
+          type: "warning",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
         setChats([]);
         sendDueDrafts([]);
         setIsLoading(false);
@@ -92,10 +100,42 @@ export default function Chats() {
   };
 
   const handleOpenChat = async (newid) => {
-    const response = await getChatInfo(newid);
-    if (response) {
-      console.log(response);
-      navigation.navigate("OpenedChat", { chat: response, id: newid });
+    try {
+      const response = await getChatInfo(newid);
+      if (response.status === 200) {
+        console.log(response);
+        navigation.navigate("OpenedChat", { chat: response, id: newid });
+      }
+    } catch (error) {
+      if (error.response.status === 401) {
+        toast.show("Unauthorised", {
+          type: "warning",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 403) {
+        toast.show("Forbidden", {
+          type: "warning",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 404) {
+        toast.show("Contact not found", {
+          type: "warning",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Server Error", {
+          type: "danger",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      }
     }
   };
   //////////
@@ -112,7 +152,12 @@ export default function Chats() {
           if (now >= timestamp) {
             console.log("Draft sent:" + draft.message);
             sendMessage({ message: draft.message }, chatId);
-
+            toast.show("Draft send", {
+              type: "success",
+              placement: "top",
+              duration: 1500,
+              animationType: "slide-in",
+            });
             const newDrafts = drafts.filter(
               (d) => d.timestamp !== draft.timestamp
             );
@@ -137,16 +182,44 @@ export default function Chats() {
       name: "",
     });
 
-    const handleCreateChat = () => {
+    const handleCreateChat = async () => {
       try {
-        const response = startChat(chatName);
+        const response = await startChat(chatName);
         console.log(response);
-        const newChat = response.data;
-        setIsLoading(true);
-        handleGetChats();
+        if (response.status === 201) {
+          toast.show("Chat successfully created", {
+            type: "normal",
+            placement: "top",
+            duration: 1000,
+            animationType: "slide-in",
+          });
+          const newChat = response.data;
+          setIsLoading(true);
+          handleGetChats();
+        }
       } catch (error) {
-        console.log(chatName.name);
-        console.log(error);
+        if (error.response.status === 400) {
+          toast.show("Bad Request", {
+            type: "warning",
+            placement: "top",
+            duration: 2000,
+            animationType: "slide-in",
+          });
+        } else if (error.response.status === 401) {
+          toast.show("Unauthorised", {
+            type: "warning",
+            placement: "top",
+            duration: 2000,
+            animationType: "slide-in",
+          });
+        } else if (error.response.status === 500) {
+          toast.show("Server Error", {
+            type: "danger",
+            placement: "top",
+            duration: 2000,
+            animationType: "slide-in",
+          });
+        }
       }
     };
 

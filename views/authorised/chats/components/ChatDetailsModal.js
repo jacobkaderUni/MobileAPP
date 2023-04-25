@@ -14,6 +14,7 @@ import updateChat from "../../../../services/api/chatManagment/updateChat";
 import removeUserFromChat from "../../../../services/api/chatManagment/removeUserFromChat";
 import Loading from "../../../Loading";
 import DisplayImage from "../../account/cameraHandling.s/Display";
+import { useToast } from "react-native-toast-notifications";
 
 export default function ChatDetailsModal({ item, id, closeDetails }) {
   const [users, setUsers] = useState([]);
@@ -22,7 +23,7 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
     name: "",
   });
   const [userToAdd, setUserToAdd] = useState("");
-
+  const toast = useToast();
   useEffect(() => {
     if (isLoading) {
       fetchChatInfo();
@@ -30,11 +31,43 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
   }, []);
 
   const fetchChatInfo = async () => {
-    const response = await getChatInfo(id);
-    if (response) {
-      setUsers(response.data.members);
-      setChatName({ name: response.data.name });
-      setIsLoading(false);
+    try {
+      const response = await getChatInfo(id);
+      if (response.status === 200) {
+        setUsers(response.data.members);
+        setChatName({ name: response.data.name });
+        setIsLoading(false);
+      }
+    } catch (error) {
+      if (error.response.status === 401) {
+        toast.show("Unauthorised", {
+          type: "warning",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 403) {
+        toast.show("Forbidden", {
+          type: "warning",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 404) {
+        toast.show("Contact not found", {
+          type: "warning",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Server Error", {
+          type: "danger",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      }
     }
   };
 
@@ -47,17 +80,100 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
   };
 
   const handleChangeChatName = async () => {
-    const response = await updateChat(chatName, id);
-    if (response) {
-      fetchChatInfo();
+    try {
+      const response = await updateChat(chatName, id);
+      if (response.status === 200) {
+        toast.show("Chat name changed", {
+          type: "success",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+        fetchChatInfo();
+      }
+    } catch (error) {
+      if (error.response.status === 400) {
+        toast.show("Bad request", {
+          type: "warning",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 401) {
+        toast.show("Unauthorised", {
+          type: "warning",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 403) {
+        toast.show("Forbidden", {
+          type: "warning",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 404) {
+        toast.show("not found", {
+          type: "warning",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Server Error", {
+          type: "danger",
+          placement: "top",
+          duration: 2000,
+          animationType: "slide-in",
+        });
+      }
     }
   };
 
   const renderItem = ({ item }) => {
     const handleRemoveUser = async () => {
-      const response = await removeUserFromChat(id, item.user_id);
-      if (response) {
-        fetchChatInfo();
+      try {
+        const response = await removeUserFromChat(id, item.user_id);
+        if (response.status === 200) {
+          toast.show("User Removed from chat", {
+            type: "normal",
+            placement: "top",
+            duration: 1500,
+            animationType: "slide-in",
+          });
+          fetchChatInfo();
+        }
+      } catch (error) {
+        if (error.response.status === 401) {
+          toast.show("Unauthorised", {
+            type: "warning",
+            placement: "top",
+            duration: 2000,
+            animationType: "slide-in",
+          });
+        } else if (error.response.status === 403) {
+          toast.show("Forbidden", {
+            type: "warning",
+            placement: "top",
+            duration: 2000,
+            animationType: "slide-in",
+          });
+        } else if (error.response.status === 404) {
+          toast.show("Not found", {
+            type: "warning",
+            placement: "top",
+            duration: 2000,
+            animationType: "slide-in",
+          });
+        } else if (error.response.status === 500) {
+          toast.show("Server Error", {
+            type: "danger",
+            placement: "top",
+            duration: 2000,
+            animationType: "slide-in",
+          });
+        }
       }
     };
 
