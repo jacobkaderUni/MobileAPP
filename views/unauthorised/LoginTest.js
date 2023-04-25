@@ -9,7 +9,7 @@ import ValidateEmail from "../../functions/ValidateEmail";
 import ValidatePass from "../../functions/ValidatePass";
 import { useAuth } from "../../navigator/AuthContext";
 import { useToast } from "react-native-toast-notifications";
-
+import { errorMessages } from "../ErrorMessages";
 const Login = (props) => {
   const [form, setForm] = useState({
     email: "ashley.williams@mmu.ac.uk",
@@ -135,13 +135,13 @@ const Login = (props) => {
                 justifyContent: "flex-end",
               }}
             >
-              <TouchableOpacity>
+              {/* <TouchableOpacity>
                 <Text
                   style={{ color: darkGreen, fontWeight: "bold", fontSize: 12 }}
                 >
                   Forgot Password?
                 </Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
             <View
               style={{
@@ -153,7 +153,7 @@ const Login = (props) => {
                 paddingRight: 16,
                 paddingStart: 16,
                 marginBottom: 7,
-                marginTop: 241,
+                marginTop: 200,
               }}
             >
               <Btn
@@ -168,7 +168,7 @@ const Login = (props) => {
               <View
                 style={{
                   display: "flex",
-                  flexDirection: "row",
+
                   justifyContent: "center",
                   alignItems: "center",
                   width: "78%",
@@ -179,7 +179,7 @@ const Login = (props) => {
                 <Text style={{ color: "grey", fontSize: 12 }}>
                   Don't have an account?{" "}
                 </Text>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   onPress={() => props.navigation.navigate("register")}
                 >
                   <Text
@@ -191,8 +191,14 @@ const Login = (props) => {
                   >
                     Signup
                   </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
+              <Btn
+                textColor="white"
+                bgColor={darkGreen}
+                btnLabel="Register"
+                Press={() => props.navigation.navigate("register")}
+              />
             </View>
           </View>
         </View>

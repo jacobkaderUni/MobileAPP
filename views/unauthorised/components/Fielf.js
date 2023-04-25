@@ -1,7 +1,7 @@
-import React from 'react';
-import { TextInput } from 'react-native';
-import { darkGreen } from './Constants';
-import { useState } from 'react';
+import React from "react";
+import { TextInput } from "react-native";
+import { darkGreen } from "./Constants";
+import { useState } from "react";
 
 const Field = (props) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -11,11 +11,11 @@ const Field = (props) => {
       {...props}
       style={{
         borderRadius: 100,
-        height: 40,
+        height: 50,
         color: darkGreen,
         paddingHorizontal: 10,
-        width: '78%',
-        backgroundColor: isFocused ? 'rgb(230,230, 230)' : 'rgb(247,247, 247)',
+        width: "78%",
+        backgroundColor: isFocused ? "rgb(230,230, 230)" : "rgb(247,247, 247)",
         marginVertical: 10,
       }}
       placeholderTextColor={darkGreen}

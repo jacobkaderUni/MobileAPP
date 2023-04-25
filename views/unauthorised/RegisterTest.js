@@ -164,13 +164,12 @@ const Register = (props) => {
               <Text style={{ color: "grey", fontSize: 12 }}>
                 By signing up, you agree to our{" "}
               </Text>
-              <TouchableOpacity>
-                <Text
-                  style={{ color: darkGreen, fontWeight: "bold", fontSize: 12 }}
-                >
-                  Terms & Conditions
-                </Text>
-              </TouchableOpacity>
+
+              <Text
+                style={{ color: darkGreen, fontWeight: "bold", fontSize: 12 }}
+              >
+                Terms & Conditions
+              </Text>
             </View>
             <View
               style={{
@@ -183,13 +182,12 @@ const Register = (props) => {
               }}
             >
               <Text style={{ color: "grey", fontSize: 12 }}>and </Text>
-              <TouchableOpacity>
-                <Text
-                  style={{ color: darkGreen, fontWeight: "bold", fontSize: 12 }}
-                >
-                  Privacy Policy
-                </Text>
-              </TouchableOpacity>
+
+              <Text
+                style={{ color: darkGreen, fontWeight: "bold", fontSize: 12 }}
+              >
+                Privacy Policy
+              </Text>
             </View>
 
             <View
@@ -202,7 +200,7 @@ const Register = (props) => {
                 paddingRight: 16,
                 paddingStart: 16,
                 marginBottom: 7,
-                marginTop: 100,
+                marginTop: 60,
               }}
             >
               <Btn
@@ -227,7 +225,7 @@ const Register = (props) => {
                 <Text style={{ color: "grey", fontSize: 12 }}>
                   Already have an account?{" "}
                 </Text>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   onPress={() => props.navigation.navigate("login")}
                 >
                   <Text
@@ -239,8 +237,14 @@ const Register = (props) => {
                   >
                     Login
                   </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
+              <Btn
+                textColor="white"
+                bgColor={darkGreen}
+                btnLabel="Login"
+                Press={() => props.navigation.navigate("login")}
+              />
             </View>
           </View>
         </View>
