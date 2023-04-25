@@ -6,13 +6,13 @@ import getContacts from "../../../../services/api/contactManagment/getContacts";
 import getBlockedContacts from "../../../../services/api/contactManagment/getBlockedContacts";
 import deleteContact from "../../../../services/api/contactManagment/deleteContact";
 import blockContact from "../../../../services/api/contactManagment/blockContact";
-
+import { useToast } from "react-native-toast-notifications";
 import unblockContact from "../../../../services/api/contactManagment/unblockContact";
 import Loading from "../../../Loading";
 export default function ContactsList({ contactType }) {
   const isFocused = useIsFocused();
   const [Contacts, setContacts] = useState([]);
-
+  const toast = useToast();
   useEffect(() => {
     if (isFocused) {
       fetchContacts();
@@ -29,28 +29,142 @@ export default function ContactsList({ contactType }) {
         setContacts(resContacts.data);
       }
     } catch (error) {
-      console.error(error);
+      if (error.response.status === 401) {
+        toast.show("Unauthorised", {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Bad Server", {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+        });
+      }
     }
   };
 
   const handleDelete = async (id) => {
-    const response = await deleteContact(id);
-    if (response) {
-      fetchContacts();
+    try {
+      const response = await deleteContact(id);
+      if (response.status === 200) {
+        toast.show("Deleted succesfully", {
+          type: "success",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+        });
+        fetchContacts();
+      }
+    } catch (error) {
+      if (error.response.status === 400) {
+        toast.show("You can't remove yourself as a contact", {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+        });
+      } else if (error.response.status === 401) {
+        toast.show("Unauthorised", {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+        });
+      } else if (error.response.status === 404) {
+        toast.show("Not found", {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Bad Server", {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+        });
+      }
     }
   };
 
   const handleBlock = async (id) => {
-    const response = await blockContact(id);
-    if (response) {
-      fetchContacts();
+    try {
+      const response = await blockContact(id);
+      if (response.status === 200) {
+        toast.show("Blocked succesfully", {
+          type: "success",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+        });
+        fetchContacts();
+      }
+    } catch (error) {
+      if (error.response.status === 400) {
+        toast.show("You can't block yourself as a contact", {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+        });
+      } else if (error.response.status === 401) {
+        toast.show("Unauthorised", {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+        });
+      } else if (error.response.status === 404) {
+        toast.show("Not found", {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Bad Server", {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+        });
+      }
     }
   };
 
   const handleUnBlock = async (id) => {
-    const response = await unblockContact(id);
-    if (response) {
-      fetchContacts();
+    try {
+      const response = await unblockContact(id);
+      if (response.status === 200) {
+        toast.show("Unblocked succesfully", {
+          type: "success",
+          placement: "top",
+          duration: 1500,
+          animationType: "slide-in",
+        });
+        fetchContacts();
+      }
+    } catch (error) {
+      if (error.response.status === 400) {
+        toast.show("You can't unblock yourself as a contact", {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+        });
+      } else if (error.response.status === 401) {
+        toast.show("Unauthorised", {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+        });
+      } else if (error.response.status === 404) {
+        toast.show("Not found", {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+        });
+      } else if (error.response.status === 500) {
+        toast.show("Bad Server", {
+          type: "danger",
+          placement: "top",
+          duration: 1500,
+        });
+      }
     }
   };
 

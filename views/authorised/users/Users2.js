@@ -106,10 +106,48 @@ export default function Users2() {
 
   const handleAddContact = useCallback(
     async (id) => {
-      const response = await addContact(id);
-      console.log(response);
-      if (response) {
-        fetchContacts("");
+      try {
+        const response = await addContact(id);
+        console.log(response);
+        if (response) {
+          toast.show("Contact Added", {
+            type: "success",
+            placement: "top",
+            duration: 1500,
+            animationType: "slide-in",
+          });
+          fetchContacts("");
+        }
+      } catch (error) {
+        if (error.response.status === 400) {
+          toast.show("You cant add yourself", {
+            type: "warning",
+            placement: "top",
+            duration: 2000,
+            animationType: "slide-in",
+          });
+        } else if (error.response.status === 401) {
+          toast.show("Unauthorised", {
+            type: "warning",
+            placement: "top",
+            duration: 2000,
+            animationType: "slide-in",
+          });
+        } else if (error.response.status === 404) {
+          toast.show("Contact not found", {
+            type: "warning",
+            placement: "top",
+            duration: 2000,
+            animationType: "slide-in",
+          });
+        } else if (error.response.status === 500) {
+          toast.show("Server Error", {
+            type: "danger",
+            placement: "top",
+            duration: 2000,
+            animationType: "slide-in",
+          });
+        }
       }
     },
     [fetchContacts]
