@@ -54,14 +54,14 @@ export default function AddUsers({ chatId, close }) {
         toast.show("Unauthorised", {
           type: "warning",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 500) {
         toast.show("Server Error", {
           type: "danger",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
           animationType: "slide-in",
         });
       }
@@ -76,7 +76,7 @@ export default function AddUsers({ chatId, close }) {
           toast.show("Contact Added", {
             type: "success",
             placement: "top",
-            duration: 1500,
+            duration: 1000,
             animationType: "slide-in",
           });
           fetchContacts("");
@@ -86,28 +86,28 @@ export default function AddUsers({ chatId, close }) {
           toast.show("User has already been added", {
             type: "warning",
             placement: "top",
-            duration: 1500,
+            duration: 1000,
             animationType: "slide-in",
           });
         } else if (error.response.status === 401) {
           toast.show("Unauthorised", {
             type: "warning",
             placement: "top",
-            duration: 1500,
+            duration: 1000,
             animationType: "slide-in",
           });
         } else if (error.response.status === 404) {
           toast.show("Contact not found", {
             type: "warning",
             placement: "top",
-            duration: 1500,
+            duration: 1000,
             animationType: "slide-in",
           });
         } else if (error.response.status === 500) {
           toast.show("Server Error", {
             type: "danger",
             placement: "top",
-            duration: 1500,
+            duration: 1000,
             animationType: "slide-in",
           });
         }

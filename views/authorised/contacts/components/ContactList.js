@@ -33,13 +33,13 @@ export default function ContactsList({ contactType }) {
         toast.show("Unauthorised", {
           type: "danger",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
         });
       } else if (error.response.status === 500) {
         toast.show("Bad Server", {
           type: "danger",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
         });
       }
     }
@@ -52,7 +52,7 @@ export default function ContactsList({ contactType }) {
         toast.show("Deleted succesfully", {
           type: "success",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
           animationType: "slide-in",
         });
         fetchContacts();
@@ -62,25 +62,25 @@ export default function ContactsList({ contactType }) {
         toast.show("You can't remove yourself as a contact", {
           type: "danger",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
         });
       } else if (error.response.status === 401) {
         toast.show("Unauthorised", {
           type: "danger",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
         });
       } else if (error.response.status === 404) {
         toast.show("Not found", {
           type: "danger",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
         });
       } else if (error.response.status === 500) {
         toast.show("Bad Server", {
           type: "danger",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
         });
       }
     }
@@ -93,7 +93,7 @@ export default function ContactsList({ contactType }) {
         toast.show("Blocked succesfully", {
           type: "success",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
           animationType: "slide-in",
         });
         fetchContacts();
@@ -103,25 +103,25 @@ export default function ContactsList({ contactType }) {
         toast.show("You can't block yourself as a contact", {
           type: "danger",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
         });
       } else if (error.response.status === 401) {
         toast.show("Unauthorised", {
           type: "danger",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
         });
       } else if (error.response.status === 404) {
         toast.show("Not found", {
           type: "danger",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
         });
       } else if (error.response.status === 500) {
         toast.show("Bad Server", {
           type: "danger",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
         });
       }
     }
@@ -134,7 +134,7 @@ export default function ContactsList({ contactType }) {
         toast.show("Unblocked succesfully", {
           type: "success",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
           animationType: "slide-in",
         });
         fetchContacts();
@@ -144,25 +144,25 @@ export default function ContactsList({ contactType }) {
         toast.show("You can't unblock yourself as a contact", {
           type: "danger",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
         });
       } else if (error.response.status === 401) {
         toast.show("Unauthorised", {
           type: "danger",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
         });
       } else if (error.response.status === 404) {
         toast.show("Not found", {
           type: "danger",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
         });
       } else if (error.response.status === 500) {
         toast.show("Bad Server", {
           type: "danger",
           placement: "top",
-          duration: 1500,
+          duration: 1000,
         });
       }
     }

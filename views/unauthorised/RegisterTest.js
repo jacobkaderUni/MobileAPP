@@ -42,7 +42,7 @@ const Register = (props) => {
           toast.show("Account created successfully", {
             type: "success",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
           navigation.navigate("logintest");
@@ -53,14 +53,14 @@ const Register = (props) => {
         toast.show("Bad request, user might already exist", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 500) {
         toast.show("Server Error", {
           type: "danger",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       }

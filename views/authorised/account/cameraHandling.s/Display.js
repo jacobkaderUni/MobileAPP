@@ -45,28 +45,28 @@ const DisplayImage = ({ user_id, type }) => {
           toast.show("Bad request, user might already exist", {
             type: "warning",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
         } else if (err.response.status === 401) {
           toast.show("Unauthorised", {
             type: "danger",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
         } else if (err.response.status === 404) {
           toast.show("Not Found", {
             type: "danger",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
         } else if (err.response.status === 500) {
           toast.show("Server Error", {
             type: "danger",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
         }

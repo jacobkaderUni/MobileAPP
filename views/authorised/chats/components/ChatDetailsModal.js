@@ -43,28 +43,28 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
         toast.show("Unauthorised", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 403) {
         toast.show("Forbidden", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 404) {
         toast.show("Contact not found", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 500) {
         toast.show("Server Error", {
           type: "danger",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       }
@@ -96,35 +96,35 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
         toast.show("Bad request", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 401) {
         toast.show("Unauthorised", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 403) {
         toast.show("Forbidden", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 404) {
         toast.show("not found", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 500) {
         toast.show("Server Error", {
           type: "danger",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       }
@@ -139,7 +139,7 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
           toast.show("User Removed from chat", {
             type: "normal",
             placement: "top",
-            duration: 1500,
+            duration: 1000,
             animationType: "slide-in",
           });
           fetchChatInfo();
@@ -149,28 +149,28 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
           toast.show("Unauthorised", {
             type: "warning",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
         } else if (error.response.status === 403) {
           toast.show("Forbidden", {
             type: "warning",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
         } else if (error.response.status === 404) {
           toast.show("Not found", {
             type: "warning",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
         } else if (error.response.status === 500) {
           toast.show("Server Error", {
             type: "danger",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
         }

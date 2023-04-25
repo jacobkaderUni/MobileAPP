@@ -34,21 +34,21 @@ export default function ProfileData({
         toast.show("Unauthorised", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 404) {
         toast.show("Not found", {
           type: "danger",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 500) {
         toast.show("Server Error", {
           type: "danger",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       }

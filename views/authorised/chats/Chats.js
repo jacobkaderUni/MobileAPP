@@ -87,7 +87,7 @@ export default function Chats() {
         toast.show("No chats in the system", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
         setChats([]);
@@ -97,14 +97,14 @@ export default function Chats() {
         toast.show("Unauthorised", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 500) {
         toast.show("Server Error", {
           type: "danger",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       }
@@ -123,28 +123,28 @@ export default function Chats() {
         toast.show("Unauthorised", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 403) {
         toast.show("Forbidden", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 404) {
         toast.show("Contact not found", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 500) {
         toast.show("Server Error", {
           type: "danger",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       }
@@ -168,7 +168,7 @@ export default function Chats() {
             toast.show("Draft send", {
               type: "success",
               placement: "top",
-              duration: 1500,
+              duration: 1000,
               animationType: "slide-in",
             });
             const newDrafts = drafts.filter(
@@ -215,21 +215,21 @@ export default function Chats() {
           toast.show("Bad Request", {
             type: "warning",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
         } else if (error.response.status === 401) {
           toast.show("Unauthorised", {
             type: "warning",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
         } else if (error.response.status === 500) {
           toast.show("Server Error", {
             type: "danger",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
         }

@@ -36,7 +36,7 @@ const Login = (props) => {
           toast.show("Logged in", {
             type: "success",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
           setUser(response);
@@ -47,14 +47,14 @@ const Login = (props) => {
         toast.show("Invalid password or email", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 500) {
         toast.show("Server Error", {
           type: "danger",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       }

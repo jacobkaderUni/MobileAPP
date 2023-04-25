@@ -240,7 +240,7 @@ export default function OpenedChat({ route }) {
           toast.show("Message deleted", {
             type: "success",
             placement: "top",
-            duration: 1500,
+            duration: 1000,
             animationType: "slide-in",
           });
         }

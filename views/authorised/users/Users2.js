@@ -69,21 +69,21 @@ export default function Users2() {
         toast.show("Bad request, user might not exist", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 401) {
         toast.show("Unauthorised", {
           type: "danger",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 500) {
         toast.show("Server Error", {
           type: "danger",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       }
@@ -114,14 +114,14 @@ export default function Users2() {
             toast.show("Contact Added", {
               type: "success",
               placement: "top",
-              duration: 1500,
+              duration: 1000,
               animationType: "slide-in",
             });
           } else {
             toast.show("Already a contact", {
               type: "normal",
               placement: "top",
-              duration: 1500,
+              duration: 1000,
               animationType: "slide-in",
             });
           }
@@ -133,28 +133,28 @@ export default function Users2() {
           toast.show("You cant add yourself", {
             type: "warning",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
         } else if (error.response.status === 401) {
           toast.show("Unauthorised", {
             type: "warning",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
         } else if (error.response.status === 404) {
           toast.show("Contact not found", {
             type: "warning",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
         } else if (error.response.status === 500) {
           toast.show("Server Error", {
             type: "danger",
             placement: "top",
-            duration: 2000,
+            duration: 1000,
             animationType: "slide-in",
           });
         }
