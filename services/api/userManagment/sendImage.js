@@ -13,7 +13,7 @@ const SendImage = async (userId, data) => {
     });
     return response;
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 };
 
