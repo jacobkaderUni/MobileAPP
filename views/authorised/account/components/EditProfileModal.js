@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import updateUser from "../../../../services/api/userManagment/updateUser";
 import EditProfilePage from "./EditProfilePage";
 import { useToast } from "react-native-toast-notifications";
+
 export default function EditProfileModal({
   userDetails,
   close,
@@ -75,6 +76,7 @@ export default function EditProfileModal({
           duration: 1000,
           animationType: "slide-in",
         });
+        logout();
       } else if (error.response.status === 403) {
         toast.show("Forbidden", {
           type: "danger",
