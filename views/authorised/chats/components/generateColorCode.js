@@ -6,7 +6,9 @@ function generateColorCode(name) {
   let color = "#";
   for (let i = 0; i < 3; i++) {
     const value = (hash >> (i * 8)) & 0xff;
-    color += ("00" + value.toString(16)).substr(-2);
+    const darkenedValue = Math.floor(value * 0.6);
+    color += ("00" + darkenedValue.toString(16)).substr(-2);
+    // color += ("00" + value.toString(16)).substr(-2);
   }
   return color;
 }

@@ -15,7 +15,8 @@ import removeUserFromChat from "../../../../services/api/chatManagment/removeUse
 import Loading from "../../../Loading";
 import DisplayImage from "../../account/cameraHandling.s/Display";
 import { useToast } from "react-native-toast-notifications";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 export default function ChatDetailsModal({ item, id, closeDetails }) {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -24,6 +25,7 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
   });
   const [userToAdd, setUserToAdd] = useState("");
   const toast = useToast();
+  const navigation = useNavigation();
   useEffect(() => {
     if (isLoading) {
       fetchChatInfo();
@@ -134,15 +136,28 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
   const renderItem = ({ item }) => {
     const handleRemoveUser = async () => {
       try {
+        let userID = await AsyncStorage.getItem("whatsthat_user_id");
         const response = await removeUserFromChat(id, item.user_id);
         if (response.status === 200) {
-          toast.show("User Removed from chat", {
-            type: "normal",
-            placement: "top",
-            duration: 1000,
-            animationType: "slide-in",
-          });
-          fetchChatInfo();
+          if (item.user_id === parseInt(userID)) {
+            closeDetails();
+            toast.show("You left the chat", {
+              type: "normal",
+              placement: "top",
+              duration: 2000,
+              animationType: "slide-in",
+            });
+
+            navigation.goBack();
+          } else {
+            toast.show("User Removed from chat", {
+              type: "normal",
+              placement: "top",
+              duration: 1000,
+              animationType: "slide-in",
+            });
+            fetchChatInfo();
+          }
         }
       } catch (error) {
         if (error.response.status === 401) {

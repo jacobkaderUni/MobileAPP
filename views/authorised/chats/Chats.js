@@ -34,10 +34,7 @@ export default function Chats() {
     navigation.setOptions({
       headerTitle: "Chats",
       headerTitleAlign: "center", // set title alignment to center
-      headerLeft: () => (
-        // use headerLeft instead of headerRight for the left icon
-        <Ionicons name="options" style={styles.dummy} size={32} color="black" />
-      ),
+
       headerRight: () => (
         <TouchableOpacity
           style={styles.addButton}
@@ -153,7 +150,6 @@ export default function Chats() {
   //////////
 
   const sendDueDrafts = async (ids) => {
-    console.log(ids);
     for (const chatId of ids) {
       const draftsJson = await AsyncStorage.getItem(chatId);
       const drafts = JSON.parse(draftsJson) || [];

@@ -19,6 +19,7 @@ export default function Message({
   updateMessage,
   deleteMessage,
   lastItem,
+  setIsAnyModalOpen,
 }) {
   const [prevAuthor, setPrevAuthor] = useState(null);
   const isLastItem = { lastItem };
@@ -28,6 +29,7 @@ export default function Message({
   const handleEdit = () => {
     setIsEditing(true);
     setShowOptions(false);
+    setIsAnyModalOpen(true);
   };
 
   const handlePress = () => {

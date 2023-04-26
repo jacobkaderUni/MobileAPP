@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -35,6 +35,7 @@ import AddUsers from "./components/addUser";
 // import SetDateTimeModal from "./components/DraftSetTime";
 import ModaleDT from "./components/DraftSetTime";
 import { useToast } from "react-native-toast-notifications";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export default function OpenedChat({ route }) {
   const navigation = useNavigation();
@@ -53,8 +54,17 @@ export default function OpenedChat({ route }) {
   const [showDateTime, setShowDateTime] = useState(false);
   const [currentUser, setCurrentUser] = useState("");
   const [showAddUser, setShowAddUser] = useState(false);
-  const toast = useToast();
+  const [isAnyModalOpen, setIsAnyModalOpen] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [distanceFromBottom, setDistanceFromBottom] = useState(0);
+  const prevMessageCountRef = useRef(0);
+  const curMessageCountRef = useRef(0);
+  const myLastMessage = useRef(false);
+  const [showNewMessageNotification, setShowNewMessageNotification] =
+    useState(false);
 
+  const toast = useToast();
+  const scrollViewRef = useRef();
   React.useLayoutEffect(() => {
     navigation.setOptions({
       // headerTitle:
@@ -97,7 +107,30 @@ export default function OpenedChat({ route }) {
       handleGetChat();
       getDrafts();
     }
-  }, [chat, id, isLoading, draftMessages]);
+    if (!isAnyModalOpen) {
+      const intervalId = setInterval(() => {
+        handleGetChat();
+        if (curMessageCountRef.current > prevMessageCountRef.current) {
+          console.log(myLastMessage.current);
+          if (!myLastMessage.current && prevMessageCountRef.current !== 0) {
+            handleNewMessage();
+            console.log("new message");
+          }
+          // Update the previous message count ref with the current message count
+          prevMessageCountRef.current = curMessageCountRef.current;
+        }
+      }, 2000);
+      return () => clearInterval(intervalId);
+    }
+  }, [
+    chat,
+    id,
+    isLoading,
+    draftMessages,
+    isAnyModalOpen,
+    showNewMessageNotification,
+    distanceFromBottom,
+  ]);
 
   const handleTyping = (text) => {
     setmessage({ message: text });
@@ -107,7 +140,7 @@ export default function OpenedChat({ route }) {
     try {
       const response = await sendMessage(text, chat_id);
       if (response.status === 200) {
-        console.log(response);
+        // console.log(response);
         handleGetChat();
         setmessage({ message: "" });
       }
@@ -156,6 +189,21 @@ export default function OpenedChat({ route }) {
       const user = await AsyncStorage.getItem("whatsthat_user_id");
       const response = await getChatInfo(id);
       if (response.status === 200) {
+        curMessageCountRef.current = response.data.messages.length;
+        // console.log(
+        //   sortMessagesByTimestamp(response.data.messages)[
+        //     response.data.messages.length - 1
+        //   ].author.user_id
+        // );
+        let sender = sortMessagesByTimestamp(response.data.messages)[
+          response.data.messages.length - 1
+        ].author.user_id;
+
+        if (sender === parseInt(user)) {
+          myLastMessage.current = true;
+        } else {
+          myLastMessage.current = false;
+        }
         setChatName(response.data.name);
         setCurrentUser(user);
         setMessages(sortMessagesByTimestamp(response.data.messages));
@@ -169,7 +217,24 @@ export default function OpenedChat({ route }) {
           duration: 1000,
           animationType: "slide-in",
         });
-      } else if (error.response.status === 500) {
+      } else if (error.response.status === 403) {
+        toast.show("You have been removed from the chat", {
+          type: "danger",
+          placement: "top",
+          duration: 1000,
+          animationType: "slide-in",
+        });
+        navigation.goBack();
+      }
+      //  else if (error.response.status === 404) {
+      //   toast.show("Not found", {
+      //     type: "danger",
+      //     placement: "top",
+      //     duration: 1000,
+      //     animationType: "slide-in",
+      //   });
+      // }
+      else if (error.response.status === 500) {
         toast.show("Server Error", {
           type: "danger",
           placement: "top",
@@ -191,6 +256,7 @@ export default function OpenedChat({ route }) {
           animationType: "slide-in",
         });
         handleGetChat();
+        setIsAnyModalOpen(false);
       }
     } catch (error) {
       if (error.response.status === 400) {
@@ -208,7 +274,7 @@ export default function OpenedChat({ route }) {
           animationType: "slide-in",
         });
       } else if (error.response.status === 403) {
-        toast.show("Forbidden", {
+        toast.show("Forbidden, possibly removed from the chat", {
           type: "warning",
           placement: "top",
           duration: 1000,
@@ -255,6 +321,7 @@ export default function OpenedChat({ route }) {
           animationType: "slide-in",
         });
       } else if (error.response.status === 403) {
+        console.log(error);
         toast.show("Forbidden", {
           type: "warning",
           placement: "top",
@@ -298,35 +365,108 @@ export default function OpenedChat({ route }) {
       setChatDetails(true);
     }
   };
+
+  // function groupMessagesByAuthor(messages) {
+  //   // Sort messages by timestamp
+  //   messages.sort((a, b) => a.timestamp - b.timestamp);
+
+  //   // Group messages by author
+  //   const groups = [];
+  //   let currentAuthor = null;
+  //   for (const message of messages) {
+  //     if (message.author !== currentAuthor) {
+  //       groups.push({ author: message.author, messages: [] });
+  //       currentAuthor = message.author;
+  //     }
+  //     const lastGroup = groups[groups.length - 1];
+  //     lastGroup.messages.push(message);
+  //   }
+
+  //   return groups;
+  // }
   function sortMessagesByTimestamp(messages) {
     return messages.sort((a, b) => a.timestamp - b.timestamp);
   }
 
-  const groupedMessages = groupBy(messages, (message) => {
+  // const groupedMessages = groupBy(messages, (message) => {
+  //   if (!isLoading) {
+  //     const date = new Date(message.timestamp);
+
+  //     return date.toDateString();
+  //   }
+  // });
+  // const sections = Object.entries(groupedMessages).map(([title, data]) => {
+  //   const authorData = Object.values(
+  //     groupBy(data, (message) => message.author.user_id)
+  //   );
+  //   const test = Object.values(groupedMessages);
+
+  //   const subSections = authorData.map((authorMessages) => ({
+  //     subTitle:
+  //       authorMessages[0].author.first_name +
+  //       " " +
+  //       authorMessages[0].author.last_name,
+  //     data: authorMessages,
+  //   }));
+  //   return {
+  //     title,
+  //     data: subSections,
+  //   };
+  // });
+  const sortedMessages = sortMessagesByTimestamp(messages);
+
+  const groupedMessagesByDate = groupBy(sortedMessages, (message) => {
     if (!isLoading) {
       const date = new Date(message.timestamp);
       return date.toDateString();
     }
   });
 
-  const sections = Object.entries(groupedMessages).map(([title, data]) => {
-    const authorData = Object.values(
-      groupBy(data, (message) => message.author.user_id)
-    );
-    const subSections = authorData.map((authorMessages) => ({
-      subTitle:
-        authorMessages[0].author.first_name +
-        " " +
-        authorMessages[0].author.last_name,
-      data: authorMessages,
-    }));
-    return {
-      title,
-      data: subSections,
-    };
-  });
+  const sections = Object.entries(groupedMessagesByDate).map(
+    ([title, data]) => {
+      const subSections = [];
+      let currentAuthor = null;
+      let currentSection = null;
 
+      data.forEach((message) => {
+        if (!currentAuthor || currentAuthor !== message.author.user_id) {
+          if (currentSection) {
+            subSections.push({
+              subTitle:
+                currentSection[0].author.first_name +
+                " " +
+                currentSection[0].author.last_name,
+              data: currentSection,
+            });
+          }
+          currentAuthor = message.author.user_id;
+          currentSection = [message];
+        } else {
+          currentSection.push(message);
+        }
+      });
+
+      if (currentSection) {
+        subSections.push({
+          subTitle:
+            currentSection[0].author.first_name +
+            " " +
+            currentSection[0].author.last_name,
+          data: currentSection,
+        });
+      }
+
+      return {
+        title,
+        data: subSections,
+      };
+    }
+  );
+
+  // console.log(sections);
   const renderItem = ({ item, index }) => {
+    // console.log("item: ");
+    // console.log(item);
     const receiverBackgroundColor =
       generateColorCode(
         item.data[0].author.first_name + item.data[0].author.last_name
@@ -343,6 +483,7 @@ export default function OpenedChat({ route }) {
             updateMessage={handleUpdateMessage}
             deleteMessage={handleDeleteMessage}
             lastItem={item.data.length - 1 === index}
+            setIsAnyModalOpen={setIsAnyModalOpen}
           />
         ))}
         {item.data[0].author.user_id !== parseInt(currentUser) && (
@@ -363,6 +504,42 @@ export default function OpenedChat({ route }) {
     setShowDrafts(false);
   };
 
+  // const handleScroll = (event) => {
+  //   const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+  //   setScrollPosition(contentOffset.y);
+  //   setDistanceFromBottom(
+  //     contentSize.height - layoutMeasurement.height - contentOffset.y
+  //   );
+  // };
+
+  const handleScroll = (event) => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    setScrollPosition(contentOffset.y);
+    const currentDistanceFromBottom =
+      contentSize.height - layoutMeasurement.height - contentOffset.y;
+    setDistanceFromBottom(currentDistanceFromBottom);
+
+    if (currentDistanceFromBottom < 50 && showNewMessageNotification) {
+      console.log("show  notification notification");
+      setShowNewMessageNotification(false);
+    }
+  };
+  const handleNewMessage = () => {
+    if (distanceFromBottom > 50) {
+      setShowNewMessageNotification(true);
+    }
+  };
+
+  const NewMessageNotification = () => (
+    <TouchableOpacity
+      onPress={() => scrollViewRef.current.scrollToEnd({ animated: true })}
+      style={styles.newMessageNotification}
+    >
+      <Text style={styles.newMessageNotificationText}>
+        New message received...
+      </Text>
+    </TouchableOpacity>
+  );
   const getDrafts = async () => {
     try {
       const drafts = await AsyncStorage.getItem(id);
@@ -449,7 +626,6 @@ export default function OpenedChat({ route }) {
                 onSetDateTime={handleSaveDraftWithTimestamp}
                 setShowModal={setShowDateTime}
               />
-              {/* <SetDateTimeModal /> */}
             </View>
           </Modal>
           <Modal visible={showAddUser} transparent={true}>
@@ -457,7 +633,19 @@ export default function OpenedChat({ route }) {
               <AddUsers chatId={id} close={closeAddUser} />
             </View>
           </Modal>
-          <ScrollView>
+          <KeyboardAwareScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ flexGrow: 1 }}
+            onContentSizeChange={() => {
+              // Scroll to the bottom only if the user is already near the bottom
+              if (distanceFromBottom < 50) {
+                scrollViewRef.current.scrollToEnd({ animated: true });
+              }
+            }}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+            ref={scrollViewRef}
+          >
             <View style={{ height: max }}>
               <SectionList
                 sections={sections}
@@ -472,7 +660,8 @@ export default function OpenedChat({ route }) {
                 renderItem={renderItem}
               />
             </View>
-          </ScrollView>
+          </KeyboardAwareScrollView>
+          {showNewMessageNotification && <NewMessageNotification />}
           <View style={styles.inputContainer}>
             <TouchableOpacity onPress={() => handleSaveDraft()}>
               <FontAwesome name="edit" size={24} color="black" />
@@ -607,5 +796,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#fff",
     fontWeight: "bold",
+  },
+  newMessageNotification: {
+    position: "absolute", // Add this line to position the notification
+    backgroundColor: "rgba(52, 152, 219, 0.9)", // Change the background color to be more visible
+    borderRadius: 25,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    bottom: 70, // Add this line to position the notification above the input field
+    zIndex: 100,
+    elevation: 5,
+  },
+  newMessageNotificationText: {
+    color: "rgba(255, 255, 255, 0.7)",
+    fontSize: 14,
   },
 });
