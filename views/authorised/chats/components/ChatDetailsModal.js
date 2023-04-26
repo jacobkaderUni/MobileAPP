@@ -25,7 +25,9 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
   });
   const [userToAdd, setUserToAdd] = useState("");
   const toast = useToast();
+  const [currUser, setCurrUser] = useState();
   const navigation = useNavigation();
+  let currentUser = 0;
   useEffect(() => {
     if (isLoading) {
       fetchChatInfo();
@@ -34,9 +36,18 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
 
   const fetchChatInfo = async () => {
     try {
+      const user = await AsyncStorage.getItem("whatsthat_user_id");
       const response = await getChatInfo(id);
       if (response.status === 200) {
-        setUsers(response.data.members);
+        setCurrUser(parseInt(user));
+        const sortedUsers = response.data.members.sort((a, b) => {
+          if (a.user_id === parseInt(user)) return -1;
+          if (b.user_id === parseInt(user)) return 1;
+          return 0;
+        });
+        setUsers(sortedUsers);
+        // setUsers(response.data.members);
+
         setChatName({ name: response.data.name });
         setIsLoading(false);
       }
@@ -205,8 +216,19 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
           <Text style={styles.memberName}>
             {item.first_name} {item.last_name}
           </Text>
-          <TouchableOpacity style={styles.addButton} onPress={handleRemoveUser}>
-            <Text style={styles.addButtonText}>Remove</Text>
+
+          <TouchableOpacity
+            style={[
+              styles.addButton,
+              {
+                backgroundColor: currUser === item.user_id ? "red" : "#4285F4",
+              },
+            ]}
+            onPress={() => handleRemoveUser()}
+          >
+            <Text style={[styles.addButtonText]}>
+              {currUser === item.user_id ? "Leave Chat" : "Remove"}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -240,33 +262,11 @@ export default function ChatDetailsModal({ item, id, closeDetails }) {
           keyExtractor={(item) => item.user_id}
         />
       )}
-      {/*  <Text style={styles.label}>Add User:</Text>
-    <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter User ID"
-          value={userToAdd}
-          onChangeText={(text) => setUserToAdd(text)}
-          keyboardType="numeric"
-        />
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={handleAddUserToChat}
-        >
-          <Text style={styles.addButtonText}>Add</Text>
-        </TouchableOpacity>
-      </View> */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  // container: {
-  //   flex: 1,
-  //   backgroundColor: "#fff",
-  //   padding: 20,
-  //   justifyContent: "center",
-  // },
   container: {
     position: "fixed",
     top: "50%",
@@ -301,6 +301,7 @@ const styles = StyleSheet.create({
   },
   addButton: {
     backgroundColor: "#4285F4",
+
     borderRadius: 5,
     padding: 10,
     alignItems: "center",
