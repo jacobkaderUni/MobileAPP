@@ -111,11 +111,15 @@ export default function OpenedChat({ route }) {
       const intervalId = setInterval(() => {
         handleGetChat();
         if (curMessageCountRef.current > prevMessageCountRef.current) {
-          console.log(myLastMessage.current);
+          // console.log(myLastMessage.current);
           if (!myLastMessage.current && prevMessageCountRef.current !== 0) {
             handleNewMessage();
-            console.log("new message");
+            // console.log("new message");
           }
+          if (myLastMessage.current) {
+            scrollViewRef.current.scrollToEnd({ animated: true });
+          }
+
           // Update the previous message count ref with the current message count
           prevMessageCountRef.current = curMessageCountRef.current;
         }
@@ -232,7 +236,6 @@ export default function OpenedChat({ route }) {
         // setIsLoading(false);
       }
     } catch (error) {
-      console.log(error);
       if (error.response.status === 401) {
         toast.show("Unauthorised", {
           type: "warning",

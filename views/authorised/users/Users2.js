@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, SectionList, ScrollView } from "react-native";
+import { StyleSheet, View, SectionList, ScrollView, Text } from "react-native";
 import addContact from "../../../services/api/contactManagment/addContact";
 import SearchBox from "./components/SearchBox";
 import SearchUsers from "../../../services/api/userManagment/SearchUsers";
@@ -9,7 +9,7 @@ import Loading from "../../Loading";
 import ContactItem from "./components/ContactItem";
 import SectionHeader from "./components/SectionHeader";
 import { useToast } from "react-native-toast-notifications";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function Users2() {
   const [isLoading, setIsLoading] = useState(true);
   const [contacts, setContacts] = useState([]);
@@ -60,11 +60,17 @@ export default function Users2() {
 
   const fetchContacts = useCallback(async (text) => {
     try {
+      const user = await AsyncStorage.getItem("whatsthat_user_id");
+      let myuser = parseInt(user);
       const response = await SearchUsers(text);
-      console.log(response);
-      setContacts(response.data);
+      const filteredContacts = response.data.filter(
+        (contact) => contact.user_id !== myuser
+      );
+      // setContacts(response.data);
+      setContacts(filteredContacts);
       setIsLoading(false);
     } catch (error) {
+      console.log(error);
       if (error.response.status === 400) {
         toast.show("Bad request, user might not exist", {
           type: "warning",
@@ -163,6 +169,38 @@ export default function Users2() {
     [fetchContacts]
   );
 
+  // return (
+  //   <View style={styles.container}>
+  //     {isLoading ? (
+  //       <Loading />
+  //     ) : (
+  //       <>
+  //         <SearchBox
+  //           value={query}
+  //           onChangeText={handleSearch}
+  //           onFocus={handleFocus}
+  //           onBlur={handleBlur}
+  //           isFocused={isFocused}
+  //         />
+  //         <ScrollView>
+  //           <SectionList
+  //             sections={sections}
+  //             renderItem={({ item }) => (
+  //               <ContactItem contact={item} addContact={handleAddContact} />
+  //             )}
+  //             renderSectionHeader={({ section: { title } }) => (
+  //               <SectionHeader title={title} />
+  //             )}
+  //             keyExtractor={(item) => item.user_id.toString()}
+  //             ItemSeparatorComponent={() => (
+  //               <View style={styles.itemSeparator} />
+  //             )}
+  //           />
+  //         </ScrollView>
+  //       </>
+  //     )}
+  //   </View>
+  // );
   return (
     <View style={styles.container}>
       {isLoading ? (
@@ -176,21 +214,27 @@ export default function Users2() {
             onBlur={handleBlur}
             isFocused={isFocused}
           />
-          <ScrollView>
-            <SectionList
-              sections={sections}
-              renderItem={({ item }) => (
-                <ContactItem contact={item} addContact={handleAddContact} />
-              )}
-              renderSectionHeader={({ section: { title } }) => (
-                <SectionHeader title={title} />
-              )}
-              keyExtractor={(item) => item.user_id.toString()}
-              ItemSeparatorComponent={() => (
-                <View style={styles.itemSeparator} />
-              )}
-            />
-          </ScrollView>
+          {sections.length > 0 ? (
+            <ScrollView>
+              <SectionList
+                sections={sections}
+                renderItem={({ item }) => (
+                  <ContactItem contact={item} addContact={handleAddContact} />
+                )}
+                renderSectionHeader={({ section: { title } }) => (
+                  <SectionHeader title={title} />
+                )}
+                keyExtractor={(item) => item.user_id.toString()}
+                ItemSeparatorComponent={() => (
+                  <View style={styles.itemSeparator} />
+                )}
+              />
+            </ScrollView>
+          ) : (
+            <View style={styles.noUsersContainer}>
+              <Text style={styles.noUsersText}>No users found</Text>
+            </View>
+          )}
         </>
       )}
     </View>
@@ -203,5 +247,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingHorizontal: 1,
     paddingTop: 8,
+  },
+  noUsersContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noUsersText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "gray",
   },
 });

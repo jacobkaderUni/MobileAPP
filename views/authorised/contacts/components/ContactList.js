@@ -89,6 +89,7 @@ export default function ContactsList({ contactType }) {
   const handleBlock = async (id) => {
     try {
       const response = await blockContact(id);
+      console.log(response);
       if (response.status === 200) {
         toast.show("Blocked succesfully", {
           type: "success",
@@ -99,6 +100,7 @@ export default function ContactsList({ contactType }) {
         fetchContacts();
       }
     } catch (error) {
+      console.log(error);
       if (error.response.status === 400) {
         toast.show("You can't block yourself as a contact", {
           type: "danger",
@@ -215,14 +217,20 @@ export default function ContactsList({ contactType }) {
         </>
       ) : (
         <>
-          <SectionList
-            sections={sections}
-            renderItem={renderItem}
-            renderSectionHeader={({ section: { title } }) => (
-              <Text style={styles.sectionHeader}>{title}</Text>
-            )}
-            keyExtractor={(item) => item.user_id.toString()}
-          />
+          {sections.length > 0 ? (
+            <SectionList
+              sections={sections}
+              renderItem={renderItem}
+              renderSectionHeader={({ section: { title } }) => (
+                <Text style={styles.sectionHeader}>{title}</Text>
+              )}
+              keyExtractor={(item) => item.user_id.toString()}
+            />
+          ) : (
+            <View style={styles.noUsersContainer}>
+              <Text style={styles.noUsersText}>No users found</Text>
+            </View>
+          )}
         </>
       )}
     </View>
@@ -276,5 +284,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginLeft: 8,
+  },
+  noUsersContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noUsersText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "gray",
   },
 });

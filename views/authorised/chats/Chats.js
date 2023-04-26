@@ -61,18 +61,32 @@ export default function Chats() {
     }
     const intervalId = setInterval(() => {
       handleGetChats();
-      console.log("checking drafts");
-    }, 60000);
+    }, 3000);
 
     return () => clearInterval(intervalId);
   }, [isFocused, isLoading]);
 
   const handleGetChats = async () => {
     try {
+      // const response = await getChats();
+      // if (response.status === 200) {
+      //   setChats(response.data);
+      //   const ids = response.data?.map((chat) => chat.chat_id);
+      //   sendDueDrafts(ids);
+      //   setIsLoading(false);
+      //   if (createChatModel) {
+      //     setCreateChatModel(false);
+      //   }
+      // }
       const response = await getChats();
       if (response.status === 200) {
-        setChats(response.data);
-        const ids = response.data?.map((chat) => chat.chat_id);
+        const sortedChats = response.data.sort((a, b) => {
+          const aTimestamp = a.last_message.timestamp || 0;
+          const bTimestamp = b.last_message.timestamp || 0;
+          return bTimestamp - aTimestamp;
+        });
+        setChats(sortedChats);
+        const ids = sortedChats.map((chat) => chat.chat_id);
         sendDueDrafts(ids);
         setIsLoading(false);
         if (createChatModel) {
@@ -112,7 +126,6 @@ export default function Chats() {
     try {
       const response = await getChatInfo(newid);
       if (response.status === 200) {
-        console.log(response);
         navigation.navigate("OpenedChat", { chat: response, id: newid });
       }
     } catch (error) {
@@ -194,7 +207,7 @@ export default function Chats() {
     const handleCreateChat = async () => {
       try {
         const response = await startChat(chatName);
-        console.log(response);
+
         if (response.status === 201) {
           toast.show("Chat successfully created", {
             type: "normal",
