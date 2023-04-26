@@ -11,8 +11,9 @@ const logoutUser = async () => {
     },
   })
     .then(async (response) => {
-      await AsyncStorage.removeItem("whatsthat_user_id");
-      await AsyncStorage.removeItem("whatsthat_session_token");
+      // await AsyncStorage.removeItem("whatsthat_user_id");
+      // await AsyncStorage.removeItem("whatsthat_session_token");
+      await AsyncStorage.clear();
       return response;
     })
     .catch((error) => {
