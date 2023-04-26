@@ -189,27 +189,50 @@ export default function OpenedChat({ route }) {
       const user = await AsyncStorage.getItem("whatsthat_user_id");
       const response = await getChatInfo(id);
       if (response.status === 200) {
-        curMessageCountRef.current = response.data.messages.length;
-        // console.log(
-        //   sortMessagesByTimestamp(response.data.messages)[
-        //     response.data.messages.length - 1
-        //   ].author.user_id
-        // );
-        let sender = sortMessagesByTimestamp(response.data.messages)[
-          response.data.messages.length - 1
-        ].author.user_id;
-
-        if (sender === parseInt(user)) {
-          myLastMessage.current = true;
+        if (response.data.messages.length == 0) {
+          curMessageCountRef.current = response.data.messages.length;
+          setChatName(response.data.name);
+          setCurrentUser(user);
+          // setMessages(sortMessagesByTimestamp(response.data.messages));
+          setIsLoading(false);
         } else {
-          myLastMessage.current = false;
+          curMessageCountRef.current = response.data.messages.length;
+          let sender = sortMessagesByTimestamp(response.data.messages)[
+            response.data.messages.length - 1
+          ].author.user_id;
+
+          if (sender === parseInt(user)) {
+            myLastMessage.current = true;
+          } else {
+            myLastMessage.current = false;
+          }
+          setChatName(response.data.name);
+          setCurrentUser(user);
+          setMessages(sortMessagesByTimestamp(response.data.messages));
+          setIsLoading(false);
         }
-        setChatName(response.data.name);
-        setCurrentUser(user);
-        setMessages(sortMessagesByTimestamp(response.data.messages));
-        setIsLoading(false);
+        // curMessageCountRef.current = response.data.messages.length;
+        // // console.log(
+        // //   sortMessagesByTimestamp(response.data.messages)[
+        // //     response.data.messages.length - 1
+        // //   ].author.user_id
+        // // );
+        // let sender = sortMessagesByTimestamp(response.data.messages)[
+        //   response.data.messages.length - 1
+        // ].author.user_id;
+
+        // if (sender === parseInt(user)) {
+        //   myLastMessage.current = true;
+        // } else {
+        //   myLastMessage.current = false;
+        // }
+        // setChatName(response.data.name);
+        // setCurrentUser(user);
+        // setMessages(sortMessagesByTimestamp(response.data.messages));
+        // setIsLoading(false);
       }
     } catch (error) {
+      console.log(error);
       if (error.response.status === 401) {
         toast.show("Unauthorised", {
           type: "warning",
