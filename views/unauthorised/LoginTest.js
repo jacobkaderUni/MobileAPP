@@ -10,6 +10,25 @@ import ValidatePass from "../../functions/ValidatePass";
 import { useAuth } from "../../navigator/AuthContext";
 import { useToast } from "react-native-toast-notifications";
 import { errorMessages } from "../ErrorMessages";
+import registerUser from "../../services/api/userManagment/registerUser";
+// const createUsers = async () => {
+//   for (let i = 0; i < 50; i++) {
+//     try {
+//       const data = {
+//         first_name: `Test`,
+//         last_name: "user${i}",
+//         email: `test.williams@mmu${i}.ac.uk`,
+//         password: "Wr3xh4m!",
+//       };
+
+//       const response = await registerUser(data);
+//       console.log("User created:", response.data);
+//     } catch (error) {
+//       console.error("Error creating user:", error);
+//     }
+//   }
+// };
+
 const Login = (props) => {
   const [form, setForm] = useState({
     email: "ashley.williams@mmu.ac.uk",

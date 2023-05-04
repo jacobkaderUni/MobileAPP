@@ -2,10 +2,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { BASE_URL } from "@env";
 
-const SearchUsers = async (text) => {
+const SearchContacts = async (text) => {
   return axios({
     method: "GET",
-    url: `${BASE_URL}search?q=${text}&search_in=all&limit=100&offset=0`,
+    url: `${BASE_URL}search?q=${text}&search_in=contacts&limit=100&offset=0`,
     headers: {
       "X-Authorization": await AsyncStorage.getItem("whatsthat_session_token"),
     },
@@ -18,4 +18,4 @@ const SearchUsers = async (text) => {
     });
 };
 
-export default SearchUsers;
+export default SearchContacts;

@@ -139,7 +139,7 @@
 //   unBlockBtn: {},
 //   addBtn: {},
 // });
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -169,23 +169,6 @@ export default function Contact({
     setShowModal(true);
   };
 
-  // const handleAction = (index) => {
-  //   if (type) {
-  //     if (index === 0) {
-  //       onBlock();
-  //     } else if (index === 1) {
-  //       onDelete();
-  //     }
-  //   } else {
-  //     if (index === 0) {
-  //       onUnBlock();
-  //     } else if (index === 1) {
-  //       onDelete();
-  //     }
-  //   }
-  //   setShowModal(false);
-  // };
-
   return (
     <View style={styles.container}>
       <View style={[styles.cardImg, styles.cardAvatar]}>
@@ -194,8 +177,14 @@ export default function Contact({
       </View>
 
       <View style={styles.cardBody}>
-        <Text style={styles.cardTitle}>
+        {/* <Text style={styles.cardTitle}>
+
           {contact.first_name} {contact.last_name}
+        </Text> */}
+        <Text style={styles.cardTitle}>
+          {!type
+            ? `${contact.first_name || ""} ${contact.last_name || ""}`
+            : `${contact.given_name || ""} ${contact.family_name || ""}`}
         </Text>
         <Text style={styles.cardPhone}>{contact.email}</Text>
       </View>

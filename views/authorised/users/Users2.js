@@ -132,7 +132,7 @@ export default function Users2() {
             });
           }
 
-          fetchContacts("");
+          fetchContacts(query);
         }
       } catch (error) {
         if (error.response.status === 400) {
@@ -166,7 +166,7 @@ export default function Users2() {
         }
       }
     },
-    [fetchContacts]
+    [fetchContacts, query]
   );
 
   // return (
