@@ -9,7 +9,6 @@ import ValidateEmail from "../../functions/ValidateEmail";
 import ValidatePass from "../../functions/ValidatePass";
 import { useAuth } from "../../navigator/AuthContext";
 import { useToast } from "react-native-toast-notifications";
-import { errorMessages } from "../ErrorMessages";
 const Login = (props) => {
   const [form, setForm] = useState({
     email: "ashley.williams@mmu.ac.uk",

@@ -17,7 +17,7 @@ export default function Avatar(image) {
     return (
       <Image
         alt=""
-        source={require("/Users/jkader/Documents/GitHub/MobileAPP/assets/defaultUser.png")}
+        source={require("/Users/jacobkader/Documents/GitHub/MobileAPP/assets/defaultUser.png")}
         style={styles.profileAvatar}
       />
     );

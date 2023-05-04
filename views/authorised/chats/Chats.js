@@ -56,15 +56,17 @@ export default function Chats() {
   }, [navigation]);
 
   useEffect(() => {
-    if (isFocused || isLoading) {
-      handleGetChats();
-    }
-    const intervalId = setInterval(() => {
-      handleGetChats();
-    }, 3000);
+    if (!createChatModel) {
+      if (isFocused || isLoading) {
+        handleGetChats();
+      }
+      const intervalId = setInterval(() => {
+        handleGetChats();
+      }, 3000);
 
-    return () => clearInterval(intervalId);
-  }, [isFocused, isLoading]);
+      return () => clearInterval(intervalId);
+    }
+  }, [createChatModel, isFocused, isLoading]);
 
   const handleGetChats = async () => {
     try {
@@ -95,12 +97,12 @@ export default function Chats() {
       }
     } catch (error) {
       if (error.code === 999) {
-        toast.show("No chats in the system", {
-          type: "warning",
-          placement: "top",
-          duration: 1000,
-          animationType: "slide-in",
-        });
+        // toast.show("No chats in the system", {
+        //   type: "warning",
+        //   placement: "top",
+        //   duration: 1000,
+        //   animationType: "slide-in",
+        // });
         setChats([]);
         sendDueDrafts([]);
         setIsLoading(false);
@@ -281,11 +283,17 @@ export default function Chats() {
         </>
       ) : (
         <>
-          <FlatList
-            data={chats}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.chat_id.toString()}
-          />
+          {chats.length > 0 ? (
+            <FlatList
+              data={chats}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.chat_id.toString()}
+            />
+          ) : (
+            <View style={styles.noChatsContainer}>
+              <Text style={styles.noChatsText}>No chats found</Text>
+            </View>
+          )}
         </>
       )}
       {/* <DraftSender chatIds={chatIds} /> */}
@@ -331,5 +339,15 @@ const styles = StyleSheet.create({
   },
   addButton: {
     marginRight: 10,
+  },
+  noChatsContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noChatsText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "gray",
   },
 });
