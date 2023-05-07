@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, SectionList, ScrollView, Text } from "react-native";
+import {
+  StyleSheet,
+  View,
+  SectionList,
+  ScrollView,
+  Text,
+  FlatList,
+} from "react-native";
 import SearchBox from "../users/components/SearchBox";
 import SearchUsers from "../../../services/api/userManagment/SearchUsers";
 import { useMemo } from "react";
@@ -23,8 +30,8 @@ export default function NewContacts() {
   const isFocused2 = useIsFocused();
 
   const PAGE_SIZE = 20; // change this to whatever your API uses
-  const [page, setPage] = useState(0);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
 
   const toast = useToast();
   useEffect(() => {
@@ -34,47 +41,38 @@ export default function NewContacts() {
 
   useEffect(() => {
     if (isFocused2) {
-      fetchContacts("");
+      fetchContacts("", 0);
       console.log("isFocused2");
     }
   }, [isLoading, query, isFocused2]);
 
-  const sortedContacts = useMemo(() => {
-    return contacts.sort((a, b) => {
-      if (a.given_name && b.given_name) {
-        return a.given_name.localeCompare(b.given_name);
-      }
-      return 0;
-    });
-  }, [contacts]);
+  const refreshContacts = () => {
+    setOffset(0);
+    setHasMore(true);
+    fetchContacts(query, 0);
+  };
 
-  const groupedContacts = useMemo(() => {
-    return sortedContacts.reduce((acc, curr) => {
-      const firstLetter = curr.given_name.charAt(0).toUpperCase();
-      if (!acc[firstLetter]) {
-        acc[firstLetter] = { title: firstLetter, data: [curr] };
-      } else {
-        acc[firstLetter].data.push(curr);
-      }
-      return acc;
-    }, {});
-  }, [sortedContacts]);
-
-  const sections = useMemo(
-    () => Object.values(groupedContacts),
-    [groupedContacts]
-  );
-
-  const fetchContacts = useCallback(async (text) => {
+  const fetchContacts = useCallback(async (text, offset) => {
     try {
       const user = await AsyncStorage.getItem("whatsthat_user_id");
       let myuser = parseInt(user);
-      const response = await SearchContacts(text);
+      const response = await SearchContacts(text, offset);
       const filteredContacts = response.data.filter(
         (contact) => contact.user_id !== myuser
       );
-      // setContacts(response.data);
-      setContacts(filteredContacts);
+
+      // Check if there are more contacts to load
+      if (filteredContacts.length < PAGE_SIZE) {
+        setHasMore(false);
+      }
+
+      // Append the new contacts to the existing ones
+      if (offset === 0) {
+        setContacts(filteredContacts);
+      } else {
+        setContacts((prevContacts) => [...prevContacts, ...filteredContacts]);
+      }
+
       setIsLoading(false);
     } catch (error) {
       console.log(error);
@@ -106,6 +104,9 @@ export default function NewContacts() {
   const handleSearch = useCallback(
     (text) => {
       setQuery(text);
+      setContacts([]);
+      setOffset(0);
+      setHasMore(true);
       if (timerId) {
         clearTimeout(timerId);
       }
@@ -128,7 +129,7 @@ export default function NewContacts() {
           duration: 1000,
           animationType: "slide-in",
         });
-        fetchContacts("");
+        fetchContacts(query, 0);
       }
     } catch (error) {
       if (error.response.status === 400) {
@@ -170,7 +171,7 @@ export default function NewContacts() {
           duration: 1000,
           animationType: "slide-in",
         });
-        fetchContacts("");
+        fetchContacts(query, 0);
       }
     } catch (error) {
       console.log(error);
@@ -201,6 +202,23 @@ export default function NewContacts() {
       }
     }
   };
+
+  const loadMoreData = () => {
+    if (!hasMore) return;
+    fetchContacts(query, contacts.length);
+  };
+
+  const renderFooter = () => {
+    if (!hasMore || contacts.length === 0) {
+      return null;
+    }
+    return (
+      <View style={styles.noMoreContactsContainer}>
+        <Text style={styles.noMoreContactsText}>No more contacts</Text>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <SearchBox
@@ -214,9 +232,45 @@ export default function NewContacts() {
         <Loading />
       ) : (
         <>
-          {sections.length > 0 ? (
-            <ScrollView>
-              <SectionList
+          {contacts.length > 0 ? (
+            <FlatList
+              data={contacts}
+              renderItem={({ item }) => (
+                <Contact
+                  contact={item}
+                  onDelete={() => handleDelete(item.user_id)}
+                  onBlock={() => handleBlock(item.user_id)}
+                  type={true}
+                />
+              )}
+              keyExtractor={(item, index) =>
+                `${item.user_id.toString()}-${index}`
+              }
+              ItemSeparatorComponent={() => (
+                <View style={styles.itemSeparator} />
+              )}
+              onEndReached={loadMoreData}
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={renderFooter}
+            />
+          ) : (
+            <View style={styles.noUsersContainer}>
+              <Text style={styles.noUsersText}>No users found</Text>
+            </View>
+          )}
+          {!hasMore && contacts.length > 0 && (
+            <View style={styles.noMoreContactsContainer}>
+              <Text style={styles.noMoreContactsText}>No more contacts</Text>
+            </View>
+          )}
+        </>
+      )}
+    </View>
+  );
+}
+
+{
+  /* <SectionList
                 sections={sections}
                 renderItem={({ item }) => (
                   <Contact
@@ -233,18 +287,9 @@ export default function NewContacts() {
                 ItemSeparatorComponent={() => (
                   <View style={styles.itemSeparator} />
                 )}
-              />
-            </ScrollView>
-          ) : (
-            <View style={styles.noUsersContainer}>
-              <Text style={styles.noUsersText}>No users found</Text>
-            </View>
-          )}
-        </>
-      )}
-    </View>
-  );
+              /> */
 }
+
 // Reset state when component is mounted
 //   useEffect(() => {
 //     setQuery("");
@@ -512,6 +557,15 @@ const styles = StyleSheet.create({
   noUsersText: {
     fontSize: 18,
     fontWeight: "bold",
+    color: "gray",
+  },
+  noMoreContactsContainer: {
+    padding: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  noMoreContactsText: {
+    fontSize: 16,
     color: "gray",
   },
 });
