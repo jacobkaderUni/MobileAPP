@@ -70,7 +70,7 @@ export default function Users2() {
     }
   }, []);
 
- const handleSearch = useCallback(
+  const handleSearch = useCallback(
     (text) => {
       setQuery(text);
       setContacts([]);
@@ -150,6 +150,22 @@ export default function Users2() {
     if (!hasMore) return;
     fetchContacts(query, contacts.length);
   };
+
+  const renderFooter = () => {
+    console.log("render footer");
+    console.log(hasMore);
+    console.log(contacts.length);
+    if (!hasMore && contacts.length > 0) {
+      return (
+        <View style={styles.noMoreContactsContainer}>
+          <Text style={styles.noMoreContactsText}>No more contacts</Text>
+        </View>
+      );
+    } else {
+      return null;
+    }
+  };
+
   return (
     <View style={styles.container}>
       {isLoading ? (
@@ -179,6 +195,7 @@ export default function Users2() {
               )}
               onEndReached={loadMoreData}
               onEndReachedThreshold={0.5}
+              ListFooterComponent={renderFooter}
             />
           ) : (
             // </ScrollView>
@@ -207,6 +224,15 @@ const styles = StyleSheet.create({
   noUsersText: {
     fontSize: 18,
     fontWeight: "bold",
+    color: "gray",
+  },
+  noMoreContactsContainer: {
+    padding: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  noMoreContactsText: {
+    fontSize: 16,
     color: "gray",
   },
 });

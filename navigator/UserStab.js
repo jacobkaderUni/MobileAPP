@@ -11,9 +11,9 @@ const UsersTabScreen = React.memo(() => {
   return (
     <UsersTab.Navigator>
       <UsersTab.Screen name="Users" component={Users2} />
-      <UsersTab.Screen name="Contacts" component={Contacts} />
+      {/* <UsersTab.Screen name="Contacts" component={Contacts} /> */}
+      <UsersTab.Screen name="Contacts" component={NewContacts} />
       <UsersTab.Screen name="Blocked" component={BlockedContacts} />
-      <UsersTab.Screen name="Test" component={NewContacts} />
     </UsersTab.Navigator>
   );
 });
