@@ -28,29 +28,34 @@ export default function NewContacts() {
   const [query, setQuery] = useState("");
   const [timerId, setTimerId] = useState(null);
   const isFocused2 = useIsFocused();
+  const [F, setF] = useState(true);
+  const [refresh, setRefresh] = useState(0);
 
   const PAGE_SIZE = 20; // change this to whatever your API uses
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
   const toast = useToast();
-  useEffect(() => {
+  const refreshContacts = () => {
     setQuery("");
     setTimerId(null);
-  }, []);
+  };
 
   useEffect(() => {
-    if (isFocused2) {
-      fetchContacts("", 0);
-      console.log("isFocused2");
+    if (isFocused2 && F) {
+      fetchContacts(query, 0);
+      setRefresh(0);
+      setHasMore(true);
+      refreshContacts();
+      setF(false);
     }
-  }, [isLoading, query, isFocused2]);
+  }, [isLoading, query, isFocused2, F]);
 
-  const refreshContacts = () => {
-    setOffset(0);
-    setHasMore(true);
-    fetchContacts(query, 0);
-  };
+  useEffect(() => {
+    if (!isFocused2) {
+      setF(true);
+    }
+  }, [isFocused2]);
 
   const fetchContacts = useCallback(async (text, offset) => {
     try {
@@ -64,6 +69,7 @@ export default function NewContacts() {
       // Check if there are more contacts to load
       if (filteredContacts.length < PAGE_SIZE) {
         setHasMore(false);
+        setRefresh((prevRefresh) => prevRefresh + 1); // Force a re-render
       }
 
       // Append the new contacts to the existing ones
@@ -209,14 +215,18 @@ export default function NewContacts() {
   };
 
   const renderFooter = () => {
-    if (!hasMore || contacts.length === 0) {
+    console.log("render footer");
+    console.log(hasMore);
+    console.log(contacts.length);
+    if (!hasMore && contacts.length > 0) {
+      return (
+        <View style={styles.noMoreContactsContainer}>
+          <Text style={styles.noMoreContactsText}>No more contacts</Text>
+        </View>
+      );
+    } else {
       return null;
     }
-    return (
-      <View style={styles.noMoreContactsContainer}>
-        <Text style={styles.noMoreContactsText}>No more contacts</Text>
-      </View>
-    );
   };
 
   return (
@@ -258,289 +268,11 @@ export default function NewContacts() {
               <Text style={styles.noUsersText}>No users found</Text>
             </View>
           )}
-          {!hasMore && contacts.length > 0 && (
-            <View style={styles.noMoreContactsContainer}>
-              <Text style={styles.noMoreContactsText}>No more contacts</Text>
-            </View>
-          )}
         </>
       )}
     </View>
   );
 }
-
-{
-  /* <SectionList
-                sections={sections}
-                renderItem={({ item }) => (
-                  <Contact
-                    contact={item}
-                    onDelete={() => handleDelete(item.user_id)}
-                    onBlock={() => handleBlock(item.user_id)}
-                    type={true}
-                  />
-                )}
-                renderSectionHeader={({ section: { title } }) => (
-                  <SectionHeader title={title} />
-                )}
-                keyExtractor={(item) => item.user_id.toString()}
-                ItemSeparatorComponent={() => (
-                  <View style={styles.itemSeparator} />
-                )}
-              /> */
-}
-
-// Reset state when component is mounted
-//   useEffect(() => {
-//     setQuery("");
-//     setTimerId(null);
-//   }, []);
-
-//   useEffect(() => {
-//     if (isFocused2) {
-//       fetchContacts("");
-//     }
-//   }, [isLoading, query, isFocused2]);
-
-//   const sortedContacts = useMemo(() => {
-//     return contacts.sort((a, b) => {
-//       if (a.given_name && b.given_name) {
-//         return a.given_name.localeCompare(b.given_name);
-//       }
-//       return 0;
-//     });
-//   }, [contacts]);
-
-//   const groupedContacts = useMemo(() => {
-//     return sortedContacts.reduce((acc, curr) => {
-//       const firstLetter = curr.given_name.charAt(0).toUpperCase();
-//       if (!acc[firstLetter]) {
-//         acc[firstLetter] = { title: firstLetter, data: [curr] };
-//       } else {
-//         acc[firstLetter].data.push(curr);
-//       }
-//       return acc;
-//     }, {});
-//   }, [sortedContacts]);
-
-//   const sections = useMemo(
-//     () => Object.values(groupedContacts),
-//     [groupedContacts]
-//   );
-
-//   const fetchContacts = useCallback(async (text) => {
-//     try {
-//       const user = await AsyncStorage.getItem("whatsthat_user_id");
-//       let myuser = parseInt(user);
-//       //   const response = await SearchContacts(text);
-//       const response = await SearchContacts(text, 100, 0);
-//       console.log(resonse);
-//       const filteredContacts = response.data.filter(
-//         (contact) => contact.user_id !== myuser
-//       );
-//       // setContacts(response.data);
-//       if (page === 0) {
-//         setContacts(filteredContacts); // for the initial load, replace the existing data
-//       } else {
-//         setContacts((prevContacts) => [...prevContacts, ...filteredContacts]); // append new data to old
-//       }
-//       setIsLoading(false);
-//       setIsRefreshing(false);
-
-//       //   setContacts(filteredContacts);
-//       //   setIsLoading(false);
-//     } catch (error) {
-//       console.log(error);
-//       if (error.response.status === 400) {
-//         toast.show("Bad request, user might not exist", {
-//           type: "warning",
-//           placement: "top",
-//           duration: 1000,
-//           animationType: "slide-in",
-//         });
-//       } else if (error.response.status === 401) {
-//         toast.show("Unauthorised", {
-//           type: "danger",
-//           placement: "top",
-//           duration: 1000,
-//           animationType: "slide-in",
-//         });
-//       } else if (error.response.status === 500) {
-//         toast.show("Server Error", {
-//           type: "danger",
-//           placement: "top",
-//           duration: 1000,
-//           animationType: "slide-in",
-//         });
-//       }
-//     }
-//   }, []);
-
-//   const handleSearch = useCallback(
-//     (text) => {
-//       setQuery(text);
-//       if (timerId) {
-//         clearTimeout(timerId);
-//       }
-//       const newTimerId = setTimeout(() => {
-//         fetchContacts(text);
-//       }, 1000);
-//       setTimerId(newTimerId);
-//     },
-//     [timerId, fetchContacts]
-//   );
-
-//   const handleDelete = async (id) => {
-//     try {
-//       const response = await deleteContact(id);
-//       console.log(response);
-//       if (response.status === 200) {
-//         toast.show("Deleted succesfully", {
-//           type: "success",
-//           placement: "top",
-//           duration: 1000,
-//           animationType: "slide-in",
-//         });
-//         fetchContacts("");
-//       }
-//     } catch (error) {
-//       if (error.response.status === 400) {
-//         toast.show("You can't remove yourself as a contact", {
-//           type: "danger",
-//           placement: "top",
-//           duration: 1000,
-//         });
-//       } else if (error.response.status === 401) {
-//         toast.show("Unauthorised", {
-//           type: "danger",
-//           placement: "top",
-//           duration: 1000,
-//         });
-//       } else if (error.response.status === 404) {
-//         toast.show("Not found", {
-//           type: "danger",
-//           placement: "top",
-//           duration: 1000,
-//         });
-//       } else if (error.response.status === 500) {
-//         toast.show("Bad Server", {
-//           type: "danger",
-//           placement: "top",
-//           duration: 1000,
-//         });
-//       }
-//     }
-//   };
-
-//   const handleBlock = async (id) => {
-//     try {
-//       const response = await blockContact(id);
-//       console.log(response);
-//       if (response.status === 200) {
-//         toast.show("Blocked succesfully", {
-//           type: "success",
-//           placement: "top",
-//           duration: 1000,
-//           animationType: "slide-in",
-//         });
-//         fetchContacts("");
-//       }
-//     } catch (error) {
-//       console.log(error);
-//       if (error.response.status === 400) {
-//         toast.show("You can't block yourself as a contact", {
-//           type: "danger",
-//           placement: "top",
-//           duration: 1000,
-//         });
-//       } else if (error.response.status === 401) {
-//         toast.show("Unauthorised", {
-//           type: "danger",
-//           placement: "top",
-//           duration: 1000,
-//         });
-//       } else if (error.response.status === 404) {
-//         toast.show("Not found", {
-//           type: "danger",
-//           placement: "top",
-//           duration: 1000,
-//         });
-//       } else if (error.response.status === 500) {
-//         toast.show("Bad Server", {
-//           type: "danger",
-//           placement: "top",
-//           duration: 1000,
-//         });
-//       }
-//     }
-//   };
-
-//   // ...
-
-//   const loadMoreContacts = () => {
-//     if (!isLoading) {
-//       // add this condition to prevent loading more if we are already loading
-//       setIsLoading(true);
-//       setPage((prevPage) => prevPage + 1);
-//       fetchContacts(query, page + 1);
-//     }
-//   };
-
-//   const onRefresh = () => {
-//     setIsRefreshing(true);
-//     setPage(0); // reset the page count
-//     fetchContacts(query);
-//   };
-
-//   // ...
-//   return (
-//     <View style={styles.container}>
-//       <SearchBox
-//         value={query}
-//         onChangeText={handleSearch}
-//         // onFocus={handleFocus}
-//         // onBlur={handleBlur}
-//         isFocused={isFocused2}
-//       />
-//       {!isFocused2 ? (
-//         <Loading />
-//       ) : (
-//         <>
-//           {sections.length > 0 ? (
-//             <ScrollView>
-//               <SectionList
-//                 sections={sections}
-//                 renderItem={({ item }) => (
-//                   <Contact
-//                     contact={item}
-//                     onDelete={() => handleDelete(item.user_id)}
-//                     onBlock={() => handleBlock(item.user_id)}
-//                     type={true}
-//                   />
-//                 )}
-//                 renderSectionHeader={({ section: { title } }) => (
-//                   <SectionHeader title={title} />
-//                 )}
-//                 keyExtractor={(item) => item.user_id.toString()}
-//                 ItemSeparatorComponent={() => (
-//                   <View style={styles.itemSeparator} />
-//                 )}
-//                 onEndReached={loadMoreContacts} // load more when end of list is reached
-//                 onEndReachedThreshold={0.5} // start loading more when user is half way from the end
-//                 refreshing={isRefreshing}
-//                 onRefresh={onRefresh}
-//               />
-//             </ScrollView>
-//           ) : (
-//             <View style={styles.noUsersContainer}>
-//               <Text style={styles.noUsersText}>No users found</Text>
-//             </View>
-//           )}
-//         </>
-//       )}
-//     </View>
-//   );
-// }
 
 const styles = StyleSheet.create({
   container: {
