@@ -83,6 +83,7 @@ export default function AddUsers({ chatId, close }) {
         }
       } catch (error) {
         if (error.response.status === 400) {
+          //when user is removed from a chat they need to be readded to the contacrts list in order to add back into the chat 
           toast.show("User has already been added", {
             type: "warning",
             placement: "top",
