@@ -41,6 +41,7 @@ import sendMessage from "../../../../services/api/chatManagment/sendMessage";
 
 const DraftSender = (chatIds) => {
   console.log("chatIds", chatIds);
+
   const sendDueDrafts = async () => {
     //const chatIds = 30; // get all chat ids
     for (const chatId of chatIds) {

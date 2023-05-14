@@ -3,10 +3,10 @@ import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
 import { Camera, CameraType, requestCameraPermissionsAsync } from "expo-camera";
 import { Ionicons } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
-import { useNavigation } from "@react-navigation/native";
 import SendImage from "../../../../services/api/userManagment/sendImage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useToast } from "react-native-toast-notifications";
+import { errorMessages } from "../../../ErrorMessages";
 
 export default function Camera2() {
   const [type, setType] = useState(CameraType.back);
@@ -16,7 +16,7 @@ export default function Camera2() {
   const [displayPhoto, setdisplayPhoto] = useState(null);
   const isFocused = useIsFocused();
   const cameraRef = useRef(null);
-  const navigation = useNavigation();
+
   const toast = useToast();
   useEffect(() => {
     (async () => {
@@ -75,31 +75,32 @@ export default function Camera2() {
         toast.show("Picture uploaded successfully", {
           type: "success",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
         setPhoto(null);
       }
     } catch (error) {
+      console.log(error.response.status);
       if (error.response.status === 401) {
         toast.show("Unauthorised", {
           type: "warning",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 404) {
         toast.show("Not found", {
           type: "danger",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       } else if (error.response.status === 500) {
         toast.show("Server Error", {
           type: "danger",
           placement: "top",
-          duration: 2000,
+          duration: 1000,
           animationType: "slide-in",
         });
       }

@@ -204,7 +204,7 @@ export default function ContactsList({ contactType }) {
           contact={item}
           onDelete={() => handleDelete(item.user_id)}
           onBlock={() => handleBlock(item.user_id)}
-          type={true}
+          type={false}
         />
       );
     }

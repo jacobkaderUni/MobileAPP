@@ -12,7 +12,7 @@ import Home from "../views/unauthorised/startpage";
 import Login from "../views/unauthorised/LoginTest";
 import Register from "../views/unauthorised/RegisterTest";
 import SettingStackScreen from "./SettingsStack";
-
+// import newContacts from "../views/authorised/contactsSB /newContacts";
 // any problems with camera, check this website
 // https://stackoverflow.com/questions/71190250/camera-not-working-with-react-native-expo-invalid-hook-call
 
@@ -41,6 +41,7 @@ function Navigator() {
         {/* <MainTab.Screen name="settings2" component={Settings2} /> */}
         <MainTab.Screen name="ChatStackScreen" component={ChatStackScreen} />
         <MainTab.Screen name="UsersTabScreen" component={UsersTabScreen} />
+        {/* <MainTab.Screen name="contacts" component={newContacts} /> */}
         {/* <MainTab.Screen name="settings2" component={Settings2} />
         <MainTab.Screen name="Camera" component={Camera2} /> */}
         <MainTab.Screen name="Settings" component={SettingStackScreen} />

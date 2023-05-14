@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, SectionList, ScrollView, Text } from "react-native";
+import {
+  StyleSheet,
+  View,
+  SectionList,
+  FlatList,
+  ScrollView,
+  Text,
+} from "react-native";
 import addContact from "../../../services/api/contactManagment/addContact";
 import SearchBox from "./components/SearchBox";
 import SearchUsers from "../../../services/api/userManagment/SearchUsers";
@@ -10,6 +17,7 @@ import ContactItem from "./components/ContactItem";
 import SectionHeader from "./components/SectionHeader";
 import { useToast } from "react-native-toast-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useIsFocused } from "@react-navigation/native";
 export default function Users2() {
   const [isLoading, setIsLoading] = useState(true);
   const [contacts, setContacts] = useState([]);
@@ -18,87 +26,56 @@ export default function Users2() {
   const [isFocused, setIsFocused] = useState(false);
   const handleFocus = () => setIsFocused(true);
   const handleBlur = () => setIsFocused(false);
+
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+
   const toast = useToast();
-  // Reset state when component is mounted
-  useEffect(() => {
-    setQuery("");
-    setTimerId(null);
-    setIsFocused(false);
-  }, []);
+  const isScreenFocused = useIsFocused();
 
   useEffect(() => {
-    if (isLoading) {
-      fetchContacts("");
+    if (isScreenFocused) {
+      const resetState = () => {
+        setQuery("");
+        setContacts([]);
+        setOffset(0);
+        setHasMore(true);
+        setIsLoading(true);
+      };
+
+      resetState();
+      fetchContacts("", 0);
     }
-  }, [isLoading, query]);
+  }, [isScreenFocused]);
 
-  const sortedContacts = useMemo(() => {
-    return contacts.sort((a, b) => {
-      if (a.given_name && b.given_name) {
-        return a.given_name.localeCompare(b.given_name);
-      }
-      return 0;
-    });
-  }, [contacts]);
-
-  const groupedContacts = useMemo(() => {
-    return sortedContacts.reduce((acc, curr) => {
-      const firstLetter = curr.given_name.charAt(0).toUpperCase();
-      if (!acc[firstLetter]) {
-        acc[firstLetter] = { title: firstLetter, data: [curr] };
-      } else {
-        acc[firstLetter].data.push(curr);
-      }
-      return acc;
-    }, {});
-  }, [sortedContacts]);
-
-  const sections = useMemo(
-    () => Object.values(groupedContacts),
-    [groupedContacts]
-  );
-
-  const fetchContacts = useCallback(async (text) => {
+  const fetchContacts = useCallback(async (text, offset) => {
     try {
       const user = await AsyncStorage.getItem("whatsthat_user_id");
       let myuser = parseInt(user);
-      const response = await SearchUsers(text);
+      const response = await SearchUsers(text, offset);
       const filteredContacts = response.data.filter(
         (contact) => contact.user_id !== myuser
       );
-      // setContacts(response.data);
-      setContacts(filteredContacts);
+
+      if (filteredContacts.length > 0) {
+        setContacts((prevContacts) => [...prevContacts, ...filteredContacts]);
+      } else {
+        setHasMore(false);
+      }
+
       setIsLoading(false);
     } catch (error) {
       console.log(error);
-      if (error.response.status === 400) {
-        toast.show("Bad request, user might not exist", {
-          type: "warning",
-          placement: "top",
-          duration: 1000,
-          animationType: "slide-in",
-        });
-      } else if (error.response.status === 401) {
-        toast.show("Unauthorised", {
-          type: "danger",
-          placement: "top",
-          duration: 1000,
-          animationType: "slide-in",
-        });
-      } else if (error.response.status === 500) {
-        toast.show("Server Error", {
-          type: "danger",
-          placement: "top",
-          duration: 1000,
-          animationType: "slide-in",
-        });
-      }
+      // ... (handle error messages)
     }
   }, []);
 
   const handleSearch = useCallback(
     (text) => {
       setQuery(text);
+      setContacts([]);
+      setOffset(0);
+      setHasMore(true);
       if (timerId) {
         clearTimeout(timerId);
       }
@@ -132,7 +109,7 @@ export default function Users2() {
             });
           }
 
-          fetchContacts("");
+          // fetchContacts(query);
         }
       } catch (error) {
         if (error.response.status === 400) {
@@ -166,41 +143,29 @@ export default function Users2() {
         }
       }
     },
-    [fetchContacts]
+    [fetchContacts, query]
   );
 
-  // return (
-  //   <View style={styles.container}>
-  //     {isLoading ? (
-  //       <Loading />
-  //     ) : (
-  //       <>
-  //         <SearchBox
-  //           value={query}
-  //           onChangeText={handleSearch}
-  //           onFocus={handleFocus}
-  //           onBlur={handleBlur}
-  //           isFocused={isFocused}
-  //         />
-  //         <ScrollView>
-  //           <SectionList
-  //             sections={sections}
-  //             renderItem={({ item }) => (
-  //               <ContactItem contact={item} addContact={handleAddContact} />
-  //             )}
-  //             renderSectionHeader={({ section: { title } }) => (
-  //               <SectionHeader title={title} />
-  //             )}
-  //             keyExtractor={(item) => item.user_id.toString()}
-  //             ItemSeparatorComponent={() => (
-  //               <View style={styles.itemSeparator} />
-  //             )}
-  //           />
-  //         </ScrollView>
-  //       </>
-  //     )}
-  //   </View>
-  // );
+  const loadMoreData = () => {
+    if (!hasMore) return;
+    fetchContacts(query, contacts.length);
+  };
+
+  const renderFooter = () => {
+    console.log("render footer");
+    console.log(hasMore);
+    console.log(contacts.length);
+    if (!hasMore && contacts.length > 0) {
+      return (
+        <View style={styles.noMoreContactsContainer}>
+          <Text style={styles.noMoreContactsText}>No more contacts</Text>
+        </View>
+      );
+    } else {
+      return null;
+    }
+  };
+
   return (
     <View style={styles.container}>
       {isLoading ? (
@@ -214,23 +179,26 @@ export default function Users2() {
             onBlur={handleBlur}
             isFocused={isFocused}
           />
-          {sections.length > 0 ? (
-            <ScrollView>
-              <SectionList
-                sections={sections}
-                renderItem={({ item }) => (
-                  <ContactItem contact={item} addContact={handleAddContact} />
-                )}
-                renderSectionHeader={({ section: { title } }) => (
-                  <SectionHeader title={title} />
-                )}
-                keyExtractor={(item) => item.user_id.toString()}
-                ItemSeparatorComponent={() => (
-                  <View style={styles.itemSeparator} />
-                )}
-              />
-            </ScrollView>
+          {contacts.length > 0 ? (
+            // <ScrollView>
+            <FlatList
+              data={contacts}
+              renderItem={({ item }) => (
+                <ContactItem contact={item} addContact={handleAddContact} />
+              )}
+              // keyExtractor={(item) => item.user_id.toString()}
+              keyExtractor={(item, index) =>
+                `${item.user_id.toString()}-${index}`
+              }
+              ItemSeparatorComponent={() => (
+                <View style={styles.itemSeparator} />
+              )}
+              onEndReached={loadMoreData}
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={renderFooter}
+            />
           ) : (
+            // </ScrollView>
             <View style={styles.noUsersContainer}>
               <Text style={styles.noUsersText}>No users found</Text>
             </View>
@@ -258,4 +226,41 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "gray",
   },
+  noMoreContactsContainer: {
+    padding: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  noMoreContactsText: {
+    fontSize: 16,
+    color: "gray",
+  },
 });
+
+{
+  /* <SectionList
+                sections={sections}
+                renderItem={({ item }) => (
+                  <ContactItem contact={item} addContact={handleAddContact} />
+                )}
+                renderSectionHeader={({ section: { title } }) => (
+                  <SectionHeader title={title} />
+                )}
+                keyExtractor={(item) => item.user_id.toString()}
+                ItemSeparatorComponent={() => (
+                  <View style={styles.itemSeparator} />
+                )}
+              /> */
+}
+{
+  /* <FlatList
+                data={contacts}
+                renderItem={({ item }) => (
+                  <ContactItem contact={item} addContact={handleAddContact} />
+                )}
+                keyExtractor={(item) => item.user_id.toString()}
+                ItemSeparatorComponent={() => (
+                  <View style={styles.itemSeparator} />
+                )}
+              /> */
+}
