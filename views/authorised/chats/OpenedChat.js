@@ -698,9 +698,22 @@ export default function OpenedChat({ route }) {
               value={message.message}
               style={[styles.searchBox, { flex: 1 }]}
             />
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.sendButton}
               onPress={() => handleMessage(message, id)}
+            >
+              <Ionicons name="send" size={24} color="#1982FC" />
+            </TouchableOpacity> */}
+            <TouchableOpacity
+              style={[
+                styles.sendButton,
+                { opacity: message.message.trim() === "" ? 0.5 : 1 },
+              ]}
+              onPress={() => {
+                if (message.message.trim() !== "") {
+                  handleMessage(message, id);
+                }
+              }}
             >
               <Ionicons name="send" size={24} color="#1982FC" />
             </TouchableOpacity>
