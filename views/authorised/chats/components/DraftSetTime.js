@@ -8,173 +8,8 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import moment from "moment";
-
-// export default function ModaleDT({ onSetDateTime, setShowModal }) {
-//   const [dateTime, setDateTime] = useState("");
-
-//   const handleSetDateTime = () => {
-//     if (!dateTime) return onSetDateTime(null);
-
-//     const timestamp = moment(dateTime, "HH:mm DD/MM/YYYY").valueOf();
-//     onSetDateTime(dateTime);
-//   };
-//   return (
-//     <View style={styles.modalContainer}>
-//       <TouchableOpacity
-//         style={styles.closeButton}
-//         onPress={() => setShowModal(false)}
-//       >
-//         <Ionicons name="close" size={24} color="black" />
-//       </TouchableOpacity>
-//       <View style={styles.headerContainer}>
-//         <Text style={styles.headerText}>Want to set a date/time?</Text>
-//         <TouchableOpacity
-//           style={styles.closeButton}
-//           onPress={() => handleSetDateTime()}
-//         >
-//           <Ionicons name="send" size={24} color="black" />
-//         </TouchableOpacity>
-//       </View>
-//       <View style={styles.dateTimeContainer}>
-//         <Text style={styles.dateTimeLabel}>Date/Time:</Text>
-//         <TextInput
-//           style={styles.dateTimeInput}
-//           placeholder="hh:mm dd/mm/yyyy"
-//           value={dateTime}
-//           onChangeText={(text) => setDateTime(text)}
-//         />
-//       </View>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   modalContainer: {
-//     backgroundColor: "white",
-//     borderRadius: 10,
-//     padding: 20,
-//     alignItems: "center",
-//   },
-//   headerContainer: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     marginBottom: 20,
-//   },
-//   headerText: {
-//     fontSize: 20,
-//     fontWeight: "bold",
-//     marginRight: 10,
-//   },
-//   closeButton: {
-//     padding: 10,
-//   },
-//   dateTimeContainer: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     marginBottom: 20,
-//   },
-//   dateTimeLabel: {
-//     fontSize: 16,
-//     marginRight: 10,
-//   },
-//   dateTimeInput: {
-//     borderWidth: 1,
-//     borderColor: "gray",
-//     borderRadius: 5,
-//     padding: 5,
-//     flex: 1,
-//   },
-// });
-
-// export default function ModaleDT({ onSetDateTime, setShowModal }) {
-//   const [date, setDate] = useState("");
-//   const [time, setTime] = useState("");
-
-//   const handleSetDateTime = () => {
-//     if (!date || !time) return onSetDateTime(null);
-
-//     // const dateTime = `${date} ${time}`;
-//     const timestamp = moment(`${date} ${time}`, "DD/MM/YYYY HH:mm").valueOf();
-//     onSetDateTime(timestamp);
-//   };
-
-//   return (
-//     <View style={styles.modalContainer}>
-//       <TouchableOpacity
-//         style={styles.closeButton}
-//         onPress={() => setShowModal(false)}
-//       >
-//         <Ionicons name="close" size={24} color="black" />
-//       </TouchableOpacity>
-//       <View style={styles.headerContainer}>
-//         <Text style={styles.headerText}>Want to set a date/time?</Text>
-//         <TouchableOpacity
-//           style={styles.closeButton}
-//           onPress={() => handleSetDateTime()}
-//         >
-//           <Ionicons name="send" size={24} color="black" />
-//         </TouchableOpacity>
-//       </View>
-//       <View style={styles.dateTimeContainer}>
-//         <Text style={styles.dateTimeLabel}>Date:</Text>
-
-//         <TextInput
-//           style={styles.dateInput}
-//           placeholder="dd/mm/yyyy"
-//           value={date}
-//           onChangeText={(text) => {
-//             let day = text.slice(0, 2);
-//             let month = text.slice(2, 4);
-//             let year = text.slice(4, 8);
-
-//             // Limit the day to 31
-//             if (day > 31) {
-//               day = "31";
-//             }
-
-//             // Limit the month to 12
-//             if (month > 12) {
-//               month = "12";
-//             }
-
-//             let formattedText = `${day}/${month}/${year}`;
-//             // Add separators only if the length of the text is correct
-//             if (text.length === 8) {
-//               formattedText = formattedText.replace(
-//                 /(\d{2})(\d{2})(\d{4})/,
-//                 "$1/$2/$3"
-//               );
-//             }
-//             // Check the length of the input
-//             if (text.length === 8 || text.length < 9) {
-//               setDate(formattedText);
-//             }
-//           }}
-//         />
-//       </View>
-//       <View style={styles.dateTimeContainer}>
-//         <Text style={styles.dateTimeLabel}>Time:</Text>
-//         {/* <TextInput
-//           style={styles.timeInput}
-//           placeholder="hh:mm"
-//           value={time}
-//           onChangeText={(text) => setTime(text)}
-//         /> */}
-//         <TextInput
-//           style={styles.timeInput}
-//           placeholder="hh:mm"
-//           value={time}
-//           onChangeText={(text) => {
-//             const formattedText = text
-//               .replace(/[^0-9]/g, "")
-//               .replace(/(\d{2})(\d{2})/, "$1:$2");
-//             setTime(formattedText);
-//           }}
-//         />
-//       </View>
-//     </View>
-//   );
-// }
+import { isNumeric } from "validator";
+import { useToast } from "react-native-toast-notifications";
 
 export default function ModaleDT({ onSetDateTime, setShowModal }) {
   const [day, setDay] = useState("");
@@ -182,10 +17,39 @@ export default function ModaleDT({ onSetDateTime, setShowModal }) {
   const [year, setYear] = useState("");
   const [hours, setHours] = useState("");
   const [minutes, setMinutes] = useState("");
+  const toast = useToast();
 
   const handleSetDateTime = () => {
     if (!day || !month || !year || !hours || !minutes) {
+      toast.show("Draft saved (without date/time)", {
+        type: "success",
+        placement: "top",
+        duration: 1000,
+        animationType: "slide-in",
+      });
       return onSetDateTime(null);
+    }
+    if (
+      !isNumeric(day) ||
+      !isNumeric(month) ||
+      !isNumeric(year) ||
+      !isNumeric(hours) ||
+      !isNumeric(minutes)
+    ) {
+      toast.show("Enter numbers only", {
+        type: "warning",
+        placement: "top",
+        duration: 1000,
+        animationType: "slide-in",
+      });
+      console.log("enter numbers please");
+      setDay("");
+      setMonth("");
+      setYear("");
+      setHours("");
+      setMinutes("");
+      return;
+      //return onSetDateTime(null);
     }
 
     const timestamp = moment(
@@ -193,6 +57,12 @@ export default function ModaleDT({ onSetDateTime, setShowModal }) {
       "DD/MM/YYYY HH:mm"
     ).valueOf();
     onSetDateTime(timestamp);
+    toast.show("Draft saved (with date/time)", {
+      type: "success",
+      placement: "top",
+      duration: 1000,
+      animationType: "slide-in",
+    });
   };
 
   return (
@@ -203,15 +73,6 @@ export default function ModaleDT({ onSetDateTime, setShowModal }) {
       >
         <Ionicons name="close" size={24} color="black" />
       </TouchableOpacity>
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>Want to set a date/time?</Text>
-        <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => handleSetDateTime()}
-        >
-          <Ionicons name="send" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
       <View style={styles.dateTimeContainer}>
         <Text style={styles.dateTimeLabel}>Date:</Text>
         <TextInput
@@ -220,7 +81,7 @@ export default function ModaleDT({ onSetDateTime, setShowModal }) {
           value={day}
           maxLength={2}
           onChangeText={(text) => {
-            if (text > 31) {
+            if (text > 31 || text < 0) {
               text = "31";
             }
             setDay(text);
@@ -233,7 +94,7 @@ export default function ModaleDT({ onSetDateTime, setShowModal }) {
           value={month}
           maxLength={2}
           onChangeText={(text) => {
-            if (text > 12) {
+            if (text > 12 || text < 0) {
               text = "12";
             }
             setMonth(text);
@@ -246,7 +107,7 @@ export default function ModaleDT({ onSetDateTime, setShowModal }) {
           value={year}
           maxLength={4}
           onChangeText={(text) => {
-            if (text < 2023) {
+            if (text.length === 4 && (text < 2023 || text < 0)) {
               text = "2023";
             }
             setYear(text);
@@ -261,7 +122,7 @@ export default function ModaleDT({ onSetDateTime, setShowModal }) {
           value={hours}
           maxLength={2}
           onChangeText={(text) => {
-            if (text > 23) {
+            if (text > 23 || text < 0) {
               text = "23";
             }
             setHours(text);
@@ -274,12 +135,20 @@ export default function ModaleDT({ onSetDateTime, setShowModal }) {
           value={minutes}
           maxLength={2}
           onChangeText={(text) => {
-            if (text > 59) {
+            if (text > 59 || text < 0) {
               text = "59";
             }
             setMinutes(text);
           }}
         />
+      </View>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity
+          style={styles.saveDraftButton}
+          onPress={() => handleSetDateTime()}
+        >
+          <Text style={styles.buttonText}>Save Draft</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -287,15 +156,17 @@ export default function ModaleDT({ onSetDateTime, setShowModal }) {
 
 const styles = StyleSheet.create({
   modalContainer: {
-    backgroundColor: "white",
+    backgroundColor: "#F5F5F5",
+    marginTop: 100,
     borderRadius: 10,
     padding: 20,
-    alignItems: "center",
+    width: "100%",
+    alignItems: "stretch",
   },
   headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
+    flexDirection: "column",
+    alignItems: "stretch",
+    width: "100%",
   },
   headerText: {
     fontSize: 20,
@@ -303,6 +174,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   closeButton: {
+    alignSelf: "center",
     padding: 10,
   },
   dateTimeContainer: {
@@ -334,5 +206,17 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 5,
     flex: 1,
+  },
+  saveDraftButton: {
+    backgroundColor: "#007BFF",
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+    alignItems: "center",
+  },
+
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
