@@ -134,21 +134,7 @@ export default function Settings2() {
             </TouchableOpacity>
             <Text style={styles.sectionHeader}>preference</Text>
 
-            <TouchableOpacity
-              onPress={() => {
-                // handle onPress
-              }}
-            >
-              <View style={styles.row}>
-                <View style={[styles.rowIcon, { backgroundColor: "#fe9400" }]}>
-                  <FeatherIcon color="#fff" size={18} name={"globe"} />
-                </View>
-                <Text style={styles.rowLabel}>Language</Text>
-                <View style={styles.rowSpacer} />
-                <FeatherIcon color="#0c0c0c" name="chevron-right" size={22} />
-              </View>
-            </TouchableOpacity>
-            <Text style={styles.sectionHeader}>....</Text>
+            <Text style={styles.sectionHeader}>Logout</Text>
             <TouchableOpacity onPress={() => onSubmitLogout()}>
               <View style={styles.row}>
                 <View style={[styles.rowIcon, { backgroundColor: "#8e8d91" }]}>
