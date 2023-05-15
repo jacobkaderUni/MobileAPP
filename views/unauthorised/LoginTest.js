@@ -19,17 +19,21 @@ const Login = (props) => {
   const [isValid, setIsValid] = useState(false);
   const [_, setUser] = useAuth();
   const toast = useToast();
+  const PASSWORD_REGEX = new RegExp(
+    "^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,30}$"
+  );
 
   const handleValidation = () => {
     const isEmailValid = ValidateEmail(form.email);
-    const isPasswordValid = ValidatePass(form.password);
+    const isPasswordValid = PASSWORD_REGEX.test(form.password);
     setEmailError(!isEmailValid && form.email.length > 0);
     setPassError(!isPasswordValid && form.password.length > 0);
     setIsValid(isEmailValid && isPasswordValid);
   };
   const onSubmit = async () => {
     try {
-      if (ValidateEmail(form.email) && ValidatePass(form.password)) {
+      if (ValidateEmail(form.email) && PASSWORD_REGEX.test(form.password)) {
+        //ValidatePass(form.password)) {
         const response = await loginUser(form);
         if (response.status === 200) {
           toast.show("Logged in", {

@@ -19,10 +19,12 @@ const Register = (props) => {
   const [passError, setPassError] = useState(false);
   const [isValid, setIsValid] = useState(false);
   const toast = useToast();
-
+  const PASSWORD_REGEX = new RegExp(
+    "^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z]).{8,30}$"
+  );
   const handleValidation = () => {
     const isEmailValid = ValidateEmail(form.email);
-    const isPasswordValid = ValidatePass(form.password);
+    const isPasswordValid = PASSWORD_REGEX.test(form.password);
     setEmailError(!isEmailValid && form.email.length > 0);
     setPassError(!isPasswordValid && form.password.length > 0);
     setIsValid(isEmailValid && isPasswordValid);
@@ -33,7 +35,9 @@ const Register = (props) => {
 
   const onSubmit = async () => {
     try {
-      if (ValidateEmail(form.email) && ValidatePass(form.password)) {
+      console.log(PASSWORD_REGEX.test(form.password));
+      if (ValidateEmail(form.email) && PASSWORD_REGEX.test(form.password)) {
+        //ValidatePass(form.password)) {
         console.log(form);
         const response = await registerUser(form);
         console.log(response);
@@ -44,6 +48,12 @@ const Register = (props) => {
             placement: "top",
             duration: 1000,
             animationType: "slide-in",
+          });
+          setForm({
+            first_name: "",
+            last_name: "",
+            email: "",
+            password: "",
           });
           navigation.navigate("logintest");
         }
@@ -243,7 +253,15 @@ const Register = (props) => {
                 textColor="white"
                 bgColor={darkGreen}
                 btnLabel="Login"
-                Press={() => props.navigation.navigate("login")}
+                Press={() => {
+                  setForm({
+                    first_name: "",
+                    last_name: "",
+                    email: "",
+                    password: "",
+                  });
+                  props.navigation.navigate("login");
+                }}
               />
             </View>
           </View>
