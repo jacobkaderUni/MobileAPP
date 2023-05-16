@@ -7,7 +7,7 @@ import SendImage from "../../../../services/api/userManagment/sendImage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useToast } from "react-native-toast-notifications";
 import { errorMessages } from "../../../ErrorMessages";
-
+import { useNavigation } from "@react-navigation/native";
 export default function Camera2() {
   const [type, setType] = useState(CameraType.back);
   const [hasPermission, setHasPermission] = useState(null);
@@ -16,7 +16,7 @@ export default function Camera2() {
   const [displayPhoto, setdisplayPhoto] = useState(null);
   const isFocused = useIsFocused();
   const cameraRef = useRef(null);
-
+  const navigation = useNavigation();
   const toast = useToast();
   useEffect(() => {
     (async () => {
