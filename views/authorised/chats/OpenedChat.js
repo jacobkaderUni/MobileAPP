@@ -392,53 +392,10 @@ export default function OpenedChat({ route }) {
     }
   };
 
-  // function groupMessagesByAuthor(messages) {
-  //   // Sort messages by timestamp
-  //   messages.sort((a, b) => a.timestamp - b.timestamp);
-
-  //   // Group messages by author
-  //   const groups = [];
-  //   let currentAuthor = null;
-  //   for (const message of messages) {
-  //     if (message.author !== currentAuthor) {
-  //       groups.push({ author: message.author, messages: [] });
-  //       currentAuthor = message.author;
-  //     }
-  //     const lastGroup = groups[groups.length - 1];
-  //     lastGroup.messages.push(message);
-  //   }
-
-  //   return groups;
-  // }
   function sortMessagesByTimestamp(messages) {
     return messages.sort((a, b) => a.timestamp - b.timestamp);
   }
 
-  // const groupedMessages = groupBy(messages, (message) => {
-  //   if (!isLoading) {
-  //     const date = new Date(message.timestamp);
-
-  //     return date.toDateString();
-  //   }
-  // });
-  // const sections = Object.entries(groupedMessages).map(([title, data]) => {
-  //   const authorData = Object.values(
-  //     groupBy(data, (message) => message.author.user_id)
-  //   );
-  //   const test = Object.values(groupedMessages);
-
-  //   const subSections = authorData.map((authorMessages) => ({
-  //     subTitle:
-  //       authorMessages[0].author.first_name +
-  //       " " +
-  //       authorMessages[0].author.last_name,
-  //     data: authorMessages,
-  //   }));
-  //   return {
-  //     title,
-  //     data: subSections,
-  //   };
-  // });
   const sortedMessages = sortMessagesByTimestamp(messages);
 
   const groupedMessagesByDate = groupBy(sortedMessages, (message) => {
@@ -529,14 +486,6 @@ export default function OpenedChat({ route }) {
     getDrafts();
     setShowDrafts(false);
   };
-
-  // const handleScroll = (event) => {
-  //   const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-  //   setScrollPosition(contentOffset.y);
-  //   setDistanceFromBottom(
-  //     contentSize.height - layoutMeasurement.height - contentOffset.y
-  //   );
-  // };
 
   const handleScroll = (event) => {
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
