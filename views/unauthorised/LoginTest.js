@@ -10,9 +10,13 @@ import ValidatePass from "../../functions/ValidatePass";
 import { useAuth } from "../../navigator/AuthContext";
 import { useToast } from "react-native-toast-notifications";
 const Login = (props) => {
+  // const [form, setForm] = useState({
+  //   email: "main@mmu.ac.uk",
+  //   password: "Test123!",
+  // });
   const [form, setForm] = useState({
-    email: "main@mmu.ac.uk",
-    password: "Test123!",
+    email: "",
+    password: "",
   });
   const [emailError, setEmailError] = useState(true);
   const [passError, setPassError] = useState(true);
