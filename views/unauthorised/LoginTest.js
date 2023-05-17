@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import Background from "./components/Background";
 import Btn from "./components/Btn";
 import { darkGreen } from "./components/Constants";
@@ -137,15 +137,7 @@ const Login = (props) => {
                 paddingRight: 0,
                 justifyContent: "flex-end",
               }}
-            >
-              {/* <TouchableOpacity>
-                <Text
-                  style={{ color: darkGreen, fontWeight: "bold", fontSize: 12 }}
-                >
-                  Forgot Password?
-                </Text>
-              </TouchableOpacity> */}
-            </View>
+            ></View>
             <View
               style={{
                 display: "flex",
@@ -182,19 +174,6 @@ const Login = (props) => {
                 <Text style={{ color: "grey", fontSize: 12 }}>
                   Don't have an account?{" "}
                 </Text>
-                {/* <TouchableOpacity
-                  onPress={() => props.navigation.navigate("register")}
-                >
-                  <Text
-                    style={{
-                      color: darkGreen,
-                      fontWeight: "bold",
-                      fontSize: 12,
-                    }}
-                  >
-                    Signup
-                  </Text>
-                </TouchableOpacity> */}
               </View>
               <Btn
                 textColor="white"

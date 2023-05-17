@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import Background from "./components/Background";
 import Btn from "./components/Btn";
 import { darkGreen } from "./components/Constants";
@@ -235,19 +235,6 @@ const Register = (props) => {
                 <Text style={{ color: "grey", fontSize: 12 }}>
                   Already have an account?{" "}
                 </Text>
-                {/* <TouchableOpacity
-                  onPress={() => props.navigation.navigate("login")}
-                >
-                  <Text
-                    style={{
-                      color: darkGreen,
-                      fontWeight: "bold",
-                      fontSize: 12,
-                    }}
-                  >
-                    Login
-                  </Text>
-                </TouchableOpacity> */}
               </View>
               <Btn
                 textColor="white"

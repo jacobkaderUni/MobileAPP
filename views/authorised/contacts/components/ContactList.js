@@ -9,6 +9,7 @@ import blockContact from "../../../../services/api/contactManagment/blockContact
 import { useToast } from "react-native-toast-notifications";
 import unblockContact from "../../../../services/api/contactManagment/unblockContact";
 import Loading from "../../../Loading";
+
 export default function ContactsList({ contactType }) {
   const isFocused = useIsFocused();
   const [Contacts, setContacts] = useState([]);

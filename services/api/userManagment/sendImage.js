@@ -18,19 +18,3 @@ const SendImage = async (userId, data) => {
 };
 
 export default SendImage;
-// const SendImage = async (userId, data) => {
-//   return fetch(`${BASE_URL}user/${userId}/photo`, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "image/png",
-//       "X-Authorization": await AsyncStorage.getItem("whatsthat_session_token"),
-//     },
-//     body: data,
-//   })
-//     .then((response) => response)
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// };
-
-// export default SendImage;

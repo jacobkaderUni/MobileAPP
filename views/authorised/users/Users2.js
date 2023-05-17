@@ -1,23 +1,15 @@
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  View,
-  SectionList,
-  FlatList,
-  ScrollView,
-  Text,
-} from "react-native";
+import { StyleSheet, View, FlatList, Text } from "react-native";
 import addContact from "../../../services/api/contactManagment/addContact";
 import SearchBox from "./components/SearchBox";
 import SearchUsers from "../../../services/api/userManagment/SearchUsers";
-import { useMemo } from "react";
 import { useCallback } from "react";
 import Loading from "../../Loading";
 import ContactItem from "./components/ContactItem";
-import SectionHeader from "./components/SectionHeader";
 import { useToast } from "react-native-toast-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
+
 export default function Users2() {
   const [isLoading, setIsLoading] = useState(true);
   const [contacts, setContacts] = useState([]);
@@ -236,31 +228,3 @@ const styles = StyleSheet.create({
     color: "gray",
   },
 });
-
-{
-  /* <SectionList
-                sections={sections}
-                renderItem={({ item }) => (
-                  <ContactItem contact={item} addContact={handleAddContact} />
-                )}
-                renderSectionHeader={({ section: { title } }) => (
-                  <SectionHeader title={title} />
-                )}
-                keyExtractor={(item) => item.user_id.toString()}
-                ItemSeparatorComponent={() => (
-                  <View style={styles.itemSeparator} />
-                )}
-              /> */
-}
-{
-  /* <FlatList
-                data={contacts}
-                renderItem={({ item }) => (
-                  <ContactItem contact={item} addContact={handleAddContact} />
-                )}
-                keyExtractor={(item) => item.user_id.toString()}
-                ItemSeparatorComponent={() => (
-                  <View style={styles.itemSeparator} />
-                )}
-              /> */
-}
